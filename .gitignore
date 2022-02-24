@@ -1,0 +1,15 @@
+/node_modules/
+
+/dist/
+
+.idea
+
+*-lock.json
+
+.env
+
+/db-data/
+
+/coverage/
+
+.DS_Store
