@@ -5,11 +5,11 @@ export const ormconfig: ConnectionOptions = {
   type: "mariadb",
   host: "localhost",
   port: 3306,
-  username: "username",
-  password: "somepassword",
-  database: "myschema",
+  username: "homeset",
+  password: "648d005a",
+  database: "homeset",
   synchronize: true,
-  logging: false,
+  logging: true,
   entities,
   migrations: [
     "src/migration/**/.{ts,js}"

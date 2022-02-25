@@ -2,10 +2,10 @@
   "definition": {
     "openapi": "3.0.0",
     "info": {
-      "title": "Template Nodejs Express API with Swagger",
+      "title": "Homeset API Swagger Doc",
       "version": "0.1.0",
       "description":
-        "This is a simple CRUD API application made with Express and documented with Swagger",
+        "This is the CRUD Homeset API",
       "license": {
         "name": "MIT",
         "url": "https://spdx.org/licenses/MIT.html"

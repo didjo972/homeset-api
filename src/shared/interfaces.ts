@@ -17,3 +17,20 @@ export interface ICreateUserRequest {
 export interface IResetPasswordRequest {
     email: string;
 }
+
+export interface ICreateTodoRequest {
+    name: string;
+    tasks?: ITaskRequest[];
+}
+
+export interface ITaskRequest {
+    id?: number;
+    description?: string;
+    status?: boolean;
+}
+
+export interface IUpdateTodoRequest {
+    name?: string;
+    status?: boolean;
+    tasks?: ITaskRequest[];
+}
