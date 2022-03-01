@@ -8,7 +8,6 @@ LABEL cicd="homeset-api"
 
 WORKDIR /app
 COPY package.json .
-COPY package-lock.json .
 COPY src ./src
 COPY test ./test
 RUN npm ci --development
@@ -27,7 +26,7 @@ FROM node:alpine
 LABEL cicd="homeset-api"
 
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 RUN npm ci --production
 

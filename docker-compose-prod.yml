@@ -71,12 +71,8 @@ services:
   web:
     image: homeset-api:latest
     restart: always
-    depends_on:
-      - mariadb:latest
     expose:
       - 3000
     ports:
       - 3000:3000
-    links:
-      - mariadb
     build: .
