@@ -72,7 +72,7 @@ services:
     image: homeset-api:latest
     restart: always
     depends_on:
-      - mariadb
+      - mariadb:latest
     expose:
       - 3000
     ports:
