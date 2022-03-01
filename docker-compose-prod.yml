@@ -1,5 +1,5 @@
 # A Docker Compose must always start with the version tag.
-version: '1'
+version: '3'
 
 # You should know that Docker Compose works with services.
 # 1 service = 1 container.
@@ -69,10 +69,14 @@ services:
       - "8025:8025"
 
   web:
+    image: homeset-api:latest
     restart: always
+    depends_on:
+      - mariadb
     expose:
       - 3000
     ports:
       - 3000:3000
-    image: homeset-api:latest
+    links:
+      - mariadb
     build: .
