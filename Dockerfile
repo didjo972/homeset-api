@@ -10,13 +10,13 @@ WORKDIR /app
 COPY package.json .
 COPY src ./src
 COPY test ./test
-RUN npm ci --development
+RUN npm i --development
 
 # test
 # RUN npm test
 
 # get production modules
-RUN rm -rf node_modules && npm ci --production
+RUN rm -rf node_modules && npm i --production
 
 # This is our runtime container that will end up
 # running on the device.
@@ -28,7 +28,7 @@ LABEL cicd="homeset-api"
 WORKDIR /app
 COPY package.json ./
 
-RUN npm ci --production
+RUN npm i --production
 
 COPY dist ./dist
 
