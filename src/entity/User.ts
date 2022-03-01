@@ -2,7 +2,15 @@ import * as bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 
 import { IsEmail, IsNotEmpty, IsOptional, Length } from "class-validator";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn
+} from "typeorm";
 import { CookingReceip } from "./cookingbook/CookingReceip";
 import { Vehicle } from "./garage/Vehicle";
 import { Item } from "./saveobject/Item";
@@ -82,19 +90,34 @@ export class User {
   @IsOptional()
   public phone: string;
 
-  @OneToMany(() => CookingReceip, (cookingReceip) => cookingReceip.owner)
+  @OneToMany(
+    () => CookingReceip,
+    (cookingReceip) => cookingReceip.owner
+  )
   public cookingReceips: CookingReceip[];
 
-  @OneToMany(() => Place, (place) => place.owner)
+  @OneToMany(
+    () => Place,
+    (place) => place.owner
+  )
   public places: Place[];
 
-  @OneToMany(() => Item, (item) => item.owner)
+  @OneToMany(
+    () => Item,
+    (item) => item.owner
+  )
   public items: Item[];
 
-  @OneToMany(() => Todo, (todo) => todo.owner)
+  @OneToMany(
+    () => Todo,
+    (todo) => todo.owner
+  )
   public todos: Todo[];
 
-  @OneToMany(() => Vehicle, (vehicle) => vehicle.owner)
+  @OneToMany(
+    () => Vehicle,
+    (vehicle) => vehicle.owner
+  )
   public vehicles: Vehicle[];
 
   @Column()
@@ -114,10 +137,6 @@ export class User {
   }
 
   public checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
-    // tslint:disable-next-line:no-console
-    console.log(unencryptedPassword);
-    // tslint:disable-next-line:no-console
-    console.log(this.password);
     return bcrypt.compareSync(unencryptedPassword, this.password);
   }
 }

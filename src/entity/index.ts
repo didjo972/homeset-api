@@ -10,4 +10,16 @@ import { Task } from "./todolist/Task";
 import { Todo } from "./todolist/Todo";
 import { User } from "./User";
 
-export const entities = [User, Todo, Task, Item, Place, CookingReceip, Element, Ingredient, Act, Servicing, Vehicle];
+export const entities = [
+  User,
+  Todo,
+  Task,
+  Item,
+  Place,
+  CookingReceip,
+  Element,
+  Ingredient,
+  Act,
+  Servicing,
+  Vehicle
+];

@@ -1,33 +1,49 @@
 import { IsBoolean } from "class-validator";
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn
+} from "typeorm";
 import { User } from "../User";
 import { Task } from "./Task";
 
 @Entity()
 export class Todo {
-    @PrimaryGeneratedColumn()
-    public id: number;
+  @PrimaryGeneratedColumn()
+  public id: number;
 
-    @Column()
-    public name: string;
+  @Column()
+  public name: string;
 
-    @Column()
-    public status: boolean;
+  @Column()
+  public status: boolean;
 
-    @OneToMany(() => Task, (task) => task.todo, {
-        cascade: true
-    })
-    public tasks: Task[];
+  @OneToMany(
+    () => Task,
+    (task) => task.todo,
+    {
+      cascade: true
+    }
+  )
+  public tasks: Task[];
 
-    @ManyToOne(() => User, (owner) => owner.todos)
-    public owner: User;
+  @ManyToOne(
+    () => User,
+    (owner) => owner.todos
+  )
+  public owner: User;
 
-    @Column()
-    @CreateDateColumn()
-    public createdAt: Date;
+  @Column()
+  @CreateDateColumn()
+  public createdAt: Date;
 
-    @Column()
-    @UpdateDateColumn()
-    public updatedAt: Date;
-
+  @Column()
+  @UpdateDateColumn()
+  public updatedAt: Date;
 }

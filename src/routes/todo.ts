@@ -52,7 +52,7 @@ router.post("/", [checkJwt], TodoController.newTodo);
  *              schema:
  *                $ref: "#/components/schemas/Todo"
  */
-// Get all users
+// Get all todos
 router.get("/", [checkJwt], TodoController.listAll);
 
 /**
@@ -82,13 +82,9 @@ router.get("/", [checkJwt], TodoController.listAll);
  *          description: Todo not found.
  */
 // Get one todo
-router.get(
-    "/:id([0-9]+)",
-    [checkJwt],
-    TodoController.getOneById
-  );
+router.get("/:id([0-9]+)", [checkJwt], TodoController.getOneById);
 
-  /**
+/**
  * @swagger
  * path:
  * /todos/{id}:
@@ -117,11 +113,7 @@ router.get(
  *          description: Todo not found.
  */
 // Edit one todo
-router.patch(
-  "/:id([0-9]+)",
-  [checkJwt],
-  TodoController.editTodo
-);
+router.patch("/:id([0-9]+)", [checkJwt], TodoController.editTodo);
 
 /**
  * @swagger
@@ -146,10 +138,6 @@ router.patch(
  *          description: Todo not found.
  */
 // Delete one todo
-router.delete(
-    "/:id([0-9]+)",
-    [checkJwt],
-    TodoController.deleteTodo
-  );
+router.delete("/:id([0-9]+)", [checkJwt], TodoController.deleteTodo);
 
 export default router;

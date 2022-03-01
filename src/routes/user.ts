@@ -57,11 +57,7 @@ router.get("/", [checkJwt, checkRole(["ADMIN"])], UserController.listAll);
  *          description: User not found.
  */
 // Get one user
-router.get(
-    "/:id([0-9]+)",
-    [checkJwt],
-    UserController.getOneById
-  );
+router.get("/:id([0-9]+)", [checkJwt], UserController.getOneById);
 
 /**
  * @swagger
@@ -93,10 +89,10 @@ router.get(
  */
 // Edit one user
 router.patch(
-    "/:id([0-9]+)",
-    [checkJwt, checkRole(["ADMIN"])],
-    UserController.editUser
-  );
+  "/:id([0-9]+)",
+  [checkJwt, checkRole(["ADMIN"])],
+  UserController.editUser
+);
 
 /**
  * @swagger
@@ -122,9 +118,9 @@ router.patch(
  */
 // Delete one user
 router.delete(
-    "/:id([0-9]+)",
-    [checkJwt, checkRole(["ADMIN"])],
-    UserController.deleteUser
-  );
+  "/:id([0-9]+)",
+  [checkJwt, checkRole(["ADMIN"])],
+  UserController.deleteUser
+);
 
 export default router;

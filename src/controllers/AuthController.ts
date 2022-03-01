@@ -7,12 +7,12 @@ import { createTokens } from "../middlewares/jwt";
 import { IChangePasswordRequest, ILoginRequest } from "../shared/interfaces";
 
 class AuthController {
-
   public static login = async (req: Request, res: Response) => {
     // Check if username and password are set
     const { email, password }: ILoginRequest = req.body;
-    if (!(email && password)) {
+    if (!email || email === "" || !password || password === "") {
       res.status(400).send();
+      return;
     }
 
     // Get user from database
@@ -22,6 +22,7 @@ class AuthController {
       user = await userRepository.findOneOrFail({ where: { email } });
     } catch (error) {
       res.status(401).send();
+      return;
     }
 
     // Check if encrypted password match
@@ -31,12 +32,22 @@ class AuthController {
     }
 
     // Sing JWT, valid for 1 hour
-    const [token, refreshToken] = await createTokens(user, process.env.jwtSecret, user.refreshSecret);
+    const [token, refreshToken] = await createTokens(
+      user,
+      process.env.jwtSecret,
+      user.refreshSecret
+    );
 
     // Send the jwt in the response
     res.setHeader("Authorization", "Bearer " + token);
     res.setHeader("x-refresh-token", "Bearer " + refreshToken);
-    res.status(200).send();
+    res.status(200).send({
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role
+    });
+    return;
   }
 
   public static changePassword = async (req: Request, res: Response) => {
@@ -78,6 +89,5 @@ class AuthController {
 
     res.status(204).send();
   }
-
- }
+}
 export default AuthController;

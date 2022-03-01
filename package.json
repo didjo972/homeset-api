@@ -11,7 +11,7 @@
     "prod": "npm run build && node ./dist/src/index.js",
     "test": "npm run build && jest --silent --watchAll --runInBand --config jest.config.js --detectOpenHandles",
     "test-coverage": "node_modules/.bin/jest --watchAll --runInBand --verbose --coverage",
-    "format": "./node_modules/.bin/tslint --project . --fix ; ./node_modules/.bin/prettier --write \"src/**/*.ts\"",
+    "format": "./node_modules/.bin/prettier --write \"src/**/*.ts\"",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
     "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create -n"
   },
