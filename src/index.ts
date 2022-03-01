@@ -4,7 +4,7 @@ import Server from "./server";
 
 // Connectes to the database -> then start the express app
 createConnection(ormconfig)
-  .then(async (connection) => {
+  .then(async () => {
     Server.runServe(3000);
   })
   .catch((err) => {

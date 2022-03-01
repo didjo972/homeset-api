@@ -67,3 +67,12 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  web:
+    restart: always
+    expose:
+      - 3000
+    ports:
+      - 3000:3000
+    image: homeset-api:latest
+    build: .
