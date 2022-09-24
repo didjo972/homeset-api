@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { createConnection } from "typeorm";
 import { ormconfig } from "../ormconfig";
 import Server from "./server";
