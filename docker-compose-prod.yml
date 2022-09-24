@@ -77,7 +77,7 @@ services:
       context: .
       dockerfile: 'Dockerfile'
     ports:
-      - "${port}:${port}"
+      - "3000:3000"
     external_links:
       - database
     depends_on:
