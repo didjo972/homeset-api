@@ -1,5 +1,7 @@
 FROM node:lts-alpine
 
+LABEL cicd="homeset-api-image"
+
 WORKDIR /app
 
 COPY package*.json ./
@@ -18,6 +20,8 @@ ENV NODE_APP="Homeset-api"
 ENV NODE_ENV=production
 
 RUN npm run build
+
+LABEL cicd="homeset-api-image"
 
 WORKDIR /app/dist
 
