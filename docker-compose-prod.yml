@@ -26,19 +26,11 @@ services:
     ports:
       - 3306:3306
 
-    # environment:
-      # MARIADB_ROOT_PASSWORD: password # The MaridaDB root password (useful to connect to the database)
-      # MARIADB_DATABASE: myschema # The MaridaDB default database (automatically created at first launch)
-      # MARIADB_USER: username # The MaridaDB user (useful to connect to the database)
-      # MARIADB_PASSWORD: somepassword # The MaridaDB password (useful to connect to the database)
-
-    ####
-    ## If you want to use a `.env` file, please comment the `environment` section.
-    ####
-
-    # The `env_file` tag allows us to declare an environment file
-    env_file:
-      - .env # The name of your environment file (the one at the repository root)
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD} # The MaridaDB root password (useful to connect to the database)
+      MARIADB_DATABASE: ${MARIADB_DATABASE} # The MaridaDB default database (automatically created at first launch)
+      MARIADB_USER: ${MARIADB_USER} # The MaridaDB user (useful to connect to the database)
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD} # The MaridaDB password (useful to connect to the database)
 
     ####
     ## If you want to persist the database data, please uncomment the lines below.
@@ -51,7 +43,7 @@ services:
       # It means that every time the repository is modifying the data inside
       # of `/var/lib/mysql`, automatically the change will appear in `db-data`.
       # You don't need to create the `db-data` folder. Docker Compose will do it for you.
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init-db-01.sql
+      # - ./db/init.sql:/docker-entrypoint-initdb.d/init-db-01.sql
       - ./db-data/:/var/lib/mysql
 
     # restart: always
