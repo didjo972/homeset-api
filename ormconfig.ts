@@ -3,7 +3,7 @@ import { entities } from "./src/entity";
 
 export const ormconfig: ConnectionOptions = {
   type: "mariadb",
-  host: "localhost",
+  host: "host.docker.internal",
   port: 3306,
   username: "homeset",
   password: "648d005a",
@@ -17,5 +17,8 @@ export const ormconfig: ConnectionOptions = {
   cli: {
     entitiesDir: "src/entity",
     migrationsDir: "src/migration"
-  }
+  },
+  connectTimeout: 30000,
+  acquireTimeout: 30000,
+  trace: true
 };

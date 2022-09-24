@@ -1,0 +1,6 @@
+node_modules
+npm-debug.log
+.eslintrc.js
+.gitignore
+.prettierrc.js
+jest.config.js

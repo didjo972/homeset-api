@@ -10,6 +10,7 @@ services:
   # but you can use the name of your choice.
   # Note: This may change the commands you are going to use a little bit.
   database:
+    restart: always
     # Official MaridaDB image from DockerHub (we use the last version)
     image: 'mariadb:latest'
 
@@ -68,11 +69,16 @@ services:
       - "1025:1025"
       - "8025:8025"
 
-  web:
-    image: homeset-api:latest
+  homeset-api:
     restart: always
-    expose:
-      - 3000
+    image: 'homeset-api'
+    container_name: 'homeset-api-prod'
+    build:
+      context: .
+      dockerfile: 'Dockerfile'
     ports:
-      - 3000:3000
-    build: .
+      - "${port}:${port}"
+    external_links:
+      - database
+    depends_on:
+      - database

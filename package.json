@@ -6,9 +6,9 @@
   "scripts": {
     "watch": "tsc -w",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
-    "build": "tsc",
-    "start": "npm run build && ts-node-dev --respawn --transpile-only --debug ./src/index.ts",
-    "prod": "npm run build && node ./dist/src/index.js",
+    "build": "tsc -p .",
+    "start": "ts-node-dev --respawn --transpile-only --debug ./src/index.ts",
+    "prod": "node ./dist/src/index.js",
     "test": "npm run build && jest --silent --watchAll --runInBand --config jest.config.js --detectOpenHandles",
     "test-coverage": "node_modules/.bin/jest --watchAll --runInBand --verbose --coverage",
     "format": "./node_modules/.bin/prettier --write \"src/**/*.ts\"",

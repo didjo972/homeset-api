@@ -60,12 +60,29 @@ Mail Server config
 To use all the functionnalities of this template, you need to use a mail server.\ If you don't have one, like the DB, you can use the docker-compose and uncomment the mailhog lines. It will provide you a mail server that you can access on port 1025 for the SMTP server and on port 8025 for the HTTP server.
 Try it on `http://localhost:8025/`
 
+Build in dev
+-----
+```
+docker build -f Dockerfile.dev . -t homeset-api
+```
+
+Build in prod
+-----
+```
+docker build -f Dockerfile . -t homeset-api
+```
+
 Start
 -----
 To start, the app need to connect to the DB. It will failed if the db is not up or if the credentials are not correct.
 ```
 npm run start
 ```
+Or
+```
+docker-compose -f docker-compose.yml up
+```
+With --build if necessary
 Open your local browser and verify the sample node api sample is working by accessing :
 `http://localhost:3000/public`
 `http://localhost:3000/api-docs/#/`
@@ -74,6 +91,10 @@ Production
 ----------
 ```
 npm run prod
+```
+Or
+```
+docker-compose -f docker-compose-prod.yml up 
 ```
 
 

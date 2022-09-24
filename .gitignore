@@ -4,9 +4,9 @@
 
 .idea
 
-*-lock.json
-
 .env
+
+.env-prod
 
 /db-data/
 

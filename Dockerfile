@@ -1,36 +1,28 @@
-
-   
-# test using the latest node container
-FROM node:latest AS ci
-
-# mark it with a label, so we can remove dangling images
-LABEL cicd="homeset-api"
+FROM node:lts-alpine
 
 WORKDIR /app
-COPY package.json .
+
+COPY package*.json ./
+
+RUN rm -rf node_modules && npm ci
+
+COPY ormconfig.ts ./
+COPY swaggerconfig.json ./
 COPY src ./src
-COPY test ./test
-RUN npm i --development
+COPY tsconfig.json ./
+COPY tslint.json ./
 
-# test
-# RUN npm test
+RUN rm -rf test
 
-# get production modules
-RUN rm -rf node_modules && npm i --production
+ENV NODE_APP="Homeset-api"
+ENV NODE_ENV=production
 
-# This is our runtime container that will end up
-# running on the device.
-FROM node:alpine
+RUN npm run build
 
-# mark it with a label, so we can remove dangling images
-LABEL cicd="homeset-api"
+WORKDIR /app/dist
 
-WORKDIR /app
-COPY package.json ./
+COPY .env-prod .env
 
-RUN npm i --production
+RUN npm install pm2 -g
 
-COPY dist ./dist
-
-# Launch our App.
-CMD ["node", "dist/src/index.js"]
+CMD ["pm2-runtime","src/index.js"]
