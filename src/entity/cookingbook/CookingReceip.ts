@@ -7,13 +7,13 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   Unique,
-  UpdateDateColumn
-} from "typeorm";
-import { User } from "../User";
-import { Element } from "./Element";
+  UpdateDateColumn,
+} from 'typeorm';
+import {User} from '../User';
+import {Element} from './Element';
 
 @Entity()
-@Unique(["name"])
+@Unique(['name'])
 export class CookingReceip {
   @PrimaryGeneratedColumn()
   public id: number;
@@ -31,10 +31,7 @@ export class CookingReceip {
   @JoinTable()
   public elements: Element[];
 
-  @ManyToOne(
-    () => User,
-    (owner) => owner.cookingReceips
-  )
+  @ManyToOne(() => User, owner => owner.cookingReceips)
   public owner: User;
 
   @Column()

@@ -1,4 +1,4 @@
-import { IsBoolean } from "class-validator";
+import {IsBoolean} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -8,10 +8,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
-  UpdateDateColumn
-} from "typeorm";
-import { User } from "../User";
-import { Task } from "./Task";
+  UpdateDateColumn,
+} from 'typeorm';
+import {User} from '../User';
+import {Task} from './Task';
 
 @Entity()
 export class Todo {
@@ -24,19 +24,12 @@ export class Todo {
   @Column()
   public status: boolean;
 
-  @OneToMany(
-    () => Task,
-    (task) => task.todo,
-    {
-      cascade: true
-    }
-  )
+  @OneToMany(() => Task, task => task.todo, {
+    cascade: true,
+  })
   public tasks: Task[];
 
-  @ManyToOne(
-    () => User,
-    (owner) => owner.todos
-  )
+  @ManyToOne(() => User, owner => owner.todos)
   public owner: User;
 
   @Column()

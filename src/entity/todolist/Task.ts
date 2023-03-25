@@ -5,10 +5,10 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
-import { ITaskRequest } from "../../shared/interfaces";
-import { Todo } from "./Todo";
+  UpdateDateColumn,
+} from 'typeorm';
+import {ITaskRequest} from '../../shared/interfaces';
+import {Todo} from './Todo';
 
 @Entity()
 export class Task {
@@ -21,10 +21,7 @@ export class Task {
   @Column()
   public status: boolean;
 
-  @ManyToOne(
-    () => Todo,
-    (todo) => todo.tasks
-  )
+  @ManyToOne(() => Todo, todo => todo.tasks)
   public todo: Todo;
 
   @Column()

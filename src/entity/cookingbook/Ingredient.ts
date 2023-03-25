@@ -5,12 +5,12 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
-  UpdateDateColumn
-} from "typeorm";
-import { Element } from "./Element";
+  UpdateDateColumn,
+} from 'typeorm';
+import {Element} from './Element';
 
 @Entity()
-@Unique(["name"])
+@Unique(['name'])
 export class Ingredient {
   @PrimaryGeneratedColumn()
   public id: number;
@@ -18,10 +18,7 @@ export class Ingredient {
   @Column()
   public name: string;
 
-  @OneToMany(
-    () => Element,
-    (element) => element.ingredient
-  )
+  @OneToMany(() => Element, element => element.ingredient)
   public element: Element;
 
   @Column()

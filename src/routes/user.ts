@@ -1,6 +1,6 @@
-import { Router } from "express";
-import UserController from "../controllers/UserController";
-import { checkJwt, checkRole } from "../middlewares/jwt";
+import {Router} from 'express';
+import UserController from '../controllers/UserController';
+import {checkJwt, checkRole} from '../middlewares/jwt';
 
 /**
  * @swagger
@@ -28,7 +28,7 @@ const router = Router();
  *                $ref: "#/components/schemas/User"
  */
 // Get all users
-router.get("/", [checkJwt, checkRole(["ADMIN"])], UserController.listAll);
+router.get('/', [checkJwt, checkRole(['ADMIN'])], UserController.listAll);
 
 /**
  * @swagger
@@ -57,7 +57,7 @@ router.get("/", [checkJwt, checkRole(["ADMIN"])], UserController.listAll);
  *          description: User not found.
  */
 // Get one user
-router.get("/:id([0-9]+)", [checkJwt], UserController.getOneById);
+router.get('/:id([0-9]+)', [checkJwt], UserController.getOneById);
 
 /**
  * @swagger
@@ -89,9 +89,9 @@ router.get("/:id([0-9]+)", [checkJwt], UserController.getOneById);
  */
 // Edit one user
 router.patch(
-  "/:id([0-9]+)",
-  [checkJwt, checkRole(["ADMIN"])],
-  UserController.editUser
+  '/:id([0-9]+)',
+  [checkJwt, checkRole(['ADMIN'])],
+  UserController.editUser,
 );
 
 /**
@@ -118,9 +118,9 @@ router.patch(
  */
 // Delete one user
 router.delete(
-  "/:id([0-9]+)",
-  [checkJwt, checkRole(["ADMIN"])],
-  UserController.deleteUser
+  '/:id([0-9]+)',
+  [checkJwt, checkRole(['ADMIN'])],
+  UserController.deleteUser,
 );
 
 export default router;

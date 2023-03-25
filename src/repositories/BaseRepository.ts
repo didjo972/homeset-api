@@ -1,4 +1,4 @@
-import { Connection, ObjectType, Repository } from "typeorm";
+import {Connection, ObjectType, Repository} from 'typeorm';
 
 class BaseRepository<T> extends Repository<T> {
   private connection: Connection;
@@ -11,7 +11,7 @@ class BaseRepository<T> extends Repository<T> {
     Object.assign(this, {
       manager: connection.manager,
       metadata: connection.getMetadata(entity),
-      queryRunner: connection.manager.queryRunner
+      queryRunner: connection.manager.queryRunner,
     });
   }
 }

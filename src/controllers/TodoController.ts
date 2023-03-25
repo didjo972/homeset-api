@@ -1,20 +1,20 @@
-import { validate } from "class-validator";
-import { Request, Response } from "express";
-import { getRepository } from "typeorm";
-import { Task } from "../entity/todolist/Task";
-import { Todo } from "../entity/todolist/Todo";
-import { User } from "../entity/User";
-import TodoRepository from "../repositories/TodoRepository";
-import { ICreateTodoRequest, IUpdateTodoRequest } from "../shared/interfaces";
-import Utils from "./Utils";
+import {validate} from 'class-validator';
+import {Request, Response} from 'express';
+import {getRepository} from 'typeorm';
+import {Task} from '../entity/todolist/Task';
+import {Todo} from '../entity/todolist/Todo';
+import {User} from '../entity/User';
+import TodoRepository from '../repositories/TodoRepository';
+import {ICreateTodoRequest, IUpdateTodoRequest} from '../shared/interfaces';
+import Utils from './Utils';
 
 class TodoController {
   public static newTodo = async (req: Request, res: Response) => {
     // Get parameters from the body
-    const { name, tasks = [] }: ICreateTodoRequest = req.body;
+    const {name, tasks = []}: ICreateTodoRequest = req.body;
     const todo = new Todo();
     todo.name = name;
-    todo.tasks = tasks.map((task) => new Task(task));
+    todo.tasks = tasks.map(task => new Task(task));
     todo.status = false;
     try {
       todo.owner = await Utils.getUserConnected(res);
@@ -34,17 +34,17 @@ class TodoController {
     try {
       await todoRepository.save(todo);
     } catch (e) {
-      res.status(400).send("Missing param");
+      res.status(400).send('Missing param');
       return;
     }
 
     // If all ok, send 201 response
-    res.status(201).send("Todo created");
-  }
+    res.status(201).send('Todo created');
+  };
 
   public static editTodo = async (req: Request, res: Response) => {
     // Get values from the body
-    const { name, status, tasks = [] }: IUpdateTodoRequest = req.body;
+    const {name, status, tasks = []}: IUpdateTodoRequest = req.body;
 
     // Get the ID from the url
     const id = req.params.id;
@@ -56,7 +56,7 @@ class TodoController {
       todo = await todoRepository.getOneById(id);
     } catch (error) {
       // If not found, send a 404 response
-      res.status(404).send("Todo not found");
+      res.status(404).send('Todo not found');
       return;
     }
 
@@ -70,8 +70,8 @@ class TodoController {
     }
 
     if (tasks) {
-      const updatedTasks = todo.tasks.map((task) => {
-        const tskFound = tasks.find((tsk) => tsk.id === task.id);
+      const updatedTasks = todo.tasks.map(task => {
+        const tskFound = tasks.find(tsk => tsk.id === task.id);
         if (
           tskFound &&
           tskFound.description !== undefined &&
@@ -94,7 +94,7 @@ class TodoController {
     console.log(ret);
     // After all send a 204 (no content, but accepted) response
     res.status(204).send();
-  }
+  };
 
   public static listAll = async (req: Request, res: Response) => {
     // Get todos from database
@@ -103,7 +103,7 @@ class TodoController {
 
     // Send the todos object
     res.send(todos);
-  }
+  };
 
   public static getOneById = async (req: Request, res: Response) => {
     // Get the ID from the url
@@ -116,9 +116,9 @@ class TodoController {
       res.send(todo);
     } catch (error) {
       console.error(error);
-      res.status(404).send("Todo not found");
+      res.status(404).send('Todo not found');
     }
-  }
+  };
 
   public static deleteTodo = async (req: Request, res: Response) => {
     // Get the ID from the url
@@ -129,14 +129,14 @@ class TodoController {
     try {
       todo = await todoRepository.findOneOrFail(id);
     } catch (error) {
-      res.status(404).send("Todo not found");
+      res.status(404).send('Todo not found');
       return;
     }
     await todoRepository.delete(id);
 
     // After all send a 204 (no content, but accepted) response
     res.status(204).send();
-  }
+  };
 }
 
 export default TodoController;

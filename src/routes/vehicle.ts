@@ -1,6 +1,6 @@
-import { Router } from "express";
+import {Router} from 'express';
 // import UserController from "../controllers/UserController";
-import { checkJwt, checkRole } from "../middlewares/jwt";
+import {checkJwt, checkRole} from '../middlewares/jwt';
 
 /**
  * @swagger

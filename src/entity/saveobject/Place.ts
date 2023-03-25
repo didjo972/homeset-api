@@ -1,4 +1,4 @@
-import { Length } from "class-validator";
+import {Length} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -7,13 +7,13 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
-  UpdateDateColumn
-} from "typeorm";
-import { User } from "../User";
-import { Item } from "./Item";
+  UpdateDateColumn,
+} from 'typeorm';
+import {User} from '../User';
+import {Item} from './Item';
 
 @Entity()
-@Unique(["name"])
+@Unique(['name'])
 export class Place {
   @PrimaryGeneratedColumn()
   public id: number;
@@ -25,16 +25,10 @@ export class Place {
   @Column()
   public description: string;
 
-  @OneToMany(
-    () => Item,
-    (item) => item.place
-  )
+  @OneToMany(() => Item, item => item.place)
   public item: Item[];
 
-  @ManyToOne(
-    () => User,
-    (owner) => owner.places
-  )
+  @ManyToOne(() => User, owner => owner.places)
   public owner: User;
 
   @Column()

@@ -1,4 +1,4 @@
-import { Length } from "class-validator";
+import {Length} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -7,10 +7,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
-  UpdateDateColumn
-} from "typeorm";
-import { User } from "../User";
-import { Servicing } from "./Servicing";
+  UpdateDateColumn,
+} from 'typeorm';
+import {User} from '../User';
+import {Servicing} from './Servicing';
 
 @Entity()
 export class Vehicle {
@@ -26,16 +26,10 @@ export class Vehicle {
   @Column()
   public identification: string;
 
-  @OneToMany(
-    () => Servicing,
-    (servicing) => servicing.vehicle
-  )
+  @OneToMany(() => Servicing, servicing => servicing.vehicle)
   public servicings: Servicing[];
 
-  @ManyToOne(
-    () => User,
-    (owner) => owner.vehicles
-  )
+  @ManyToOne(() => User, owner => owner.vehicles)
   public owner: User;
 
   @Column()

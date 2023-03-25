@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { getRepository } from "typeorm";
+import {NextFunction, Request, Response} from 'express';
+import jwt from 'jsonwebtoken';
+import {getRepository} from 'typeorm';
 
-import { User } from "../entity/User";
+import {User} from '../entity/User';
 
 export const checkJwt = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   // Get the jwt token from the head
   let token = req.headers.authorization as string;
@@ -15,26 +15,26 @@ export const checkJwt = async (
 
   // Try to validate the token and get data
   try {
-    token = token.startsWith("Bearer ") && token.substring(7);
+    token = token.startsWith('Bearer ') && token.substring(7);
     jwtPayload = jwt.verify(token, process.env.jwtSecret) as any;
     res.locals.jwtPayload = jwtPayload;
   } catch (error) {
     // If token is not valid, try to refresh the token
     try {
-      let refreshToken: string = req.headers["x-refresh-token"] as string;
+      let refreshToken: string = req.headers['x-refresh-token'] as string;
       refreshToken =
-        refreshToken.startsWith("Bearer ") && refreshToken.substring(7);
-      const { newToken, newRefreshToken, userId } = await refreshTokens(
-        refreshToken
+        refreshToken.startsWith('Bearer ') && refreshToken.substring(7);
+      const {newToken, newRefreshToken, userId} = await refreshTokens(
+        refreshToken,
       );
       // The token is valid for 5 min
       // We want to send a new token on every request
-      res.setHeader("Authorization", `Bearer ${newToken}`);
-      res.setHeader("x-refresh-token", `Bearer ${newRefreshToken}`);
-      res.locals.jwtPayload = { userId };
+      res.setHeader('Authorization', `Bearer ${newToken}`);
+      res.setHeader('x-refresh-token', `Bearer ${newRefreshToken}`);
+      res.locals.jwtPayload = {userId};
     } catch (error2) {
       // If refresh token is not valid, respond with 401 (unauthorized)
-      res.status(401).send("You need to connect again.");
+      res.status(401).send('You need to connect again.');
       return;
     }
   }
@@ -69,16 +69,16 @@ export const checkRole = (roles: string[]) => {
 export const createTokens = async (
   user: User,
   secret: string,
-  secret2: string
+  secret2: string,
 ) => {
   const createToken = jwt.sign(
-    { userId: user.id, email: user.email, username: user.username },
+    {userId: user.id, email: user.email, username: user.username},
     secret,
-    { expiresIn: "5m" }
+    {expiresIn: '5m'},
   );
 
-  const refreshToken = jwt.sign({ userId: user.id }, secret2, {
-    expiresIn: "365d"
+  const refreshToken = jwt.sign({userId: user.id}, secret2, {
+    expiresIn: '365d',
   });
 
   return Promise.all([createToken, refreshToken]);
@@ -93,14 +93,14 @@ export const refreshTokens = async (refreshToken: string) => {
     // tslint:disable-next-line:no-console
     console.error(err);
   }
-  const { userId } = jwtPayload;
+  const {userId} = jwtPayload;
   if (!userId) {
-    throw new Error("This user does not exist.");
+    throw new Error('This user does not exist.');
   }
   const userRepository = getRepository(User);
   const user = await userRepository.findOneOrFail(userId);
   if (!user) {
-    throw new Error("This user does not exist.");
+    throw new Error('This user does not exist.');
   }
 
   jwt.verify(refreshToken, user.refreshSecret);
@@ -108,8 +108,8 @@ export const refreshTokens = async (refreshToken: string) => {
   const [newToken, newRefreshToken] = await createTokens(
     user,
     process.env.jwtSecret,
-    user.refreshSecret
+    user.refreshSecret,
   );
 
-  return { newToken, newRefreshToken, userId };
+  return {newToken, newRefreshToken, userId};
 };

@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
-import { getRepository } from "typeorm";
-import { User } from "../entity/User";
+import {Request, Response} from 'express';
+import {getRepository} from 'typeorm';
+import {User} from '../entity/User';
 
 class Utils {
   public static getUserConnected = async (res: Response): Promise<User> => {
@@ -10,7 +10,7 @@ class Utils {
     // Get user from the database
     const userRepository = getRepository(User);
     return await userRepository.findOneOrFail(id);
-  }
+  };
 }
 
 export default Utils;

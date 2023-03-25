@@ -1,5 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Servicing } from "./Servicing";
+import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Servicing} from './Servicing';
 
 @Entity()
 export class Act {
@@ -9,9 +9,6 @@ export class Act {
   @Column()
   public description: string;
 
-  @ManyToOne(
-    () => Servicing,
-    (servicing) => servicing.acts
-  )
+  @ManyToOne(() => Servicing, servicing => servicing.acts)
   public servicing: Servicing;
 }

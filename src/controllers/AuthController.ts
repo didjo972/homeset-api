@@ -1,16 +1,16 @@
-import { validate } from "class-validator";
-import { Request, Response } from "express";
-import { getRepository } from "typeorm";
+import {validate} from 'class-validator';
+import {Request, Response} from 'express';
+import {getRepository} from 'typeorm';
 
-import { User } from "../entity/User";
-import { createTokens } from "../middlewares/jwt";
-import { IChangePasswordRequest, ILoginRequest } from "../shared/interfaces";
+import {User} from '../entity/User';
+import {createTokens} from '../middlewares/jwt';
+import {IChangePasswordRequest, ILoginRequest} from '../shared/interfaces';
 
 class AuthController {
   public static login = async (req: Request, res: Response) => {
     // Check if username and password are set
-    const { email, password }: ILoginRequest = req.body;
-    if (!email || email === "" || !password || password === "") {
+    const {email, password}: ILoginRequest = req.body;
+    if (!email || email === '' || !password || password === '') {
       res.status(400).send();
       return;
     }
@@ -19,7 +19,7 @@ class AuthController {
     const userRepository = getRepository(User);
     let user: User;
     try {
-      user = await userRepository.findOneOrFail({ where: { email } });
+      user = await userRepository.findOneOrFail({where: {email}});
     } catch (error) {
       res.status(401).send();
       return;
@@ -35,27 +35,27 @@ class AuthController {
     const [token, refreshToken] = await createTokens(
       user,
       process.env.jwtSecret,
-      user.refreshSecret
+      user.refreshSecret,
     );
 
     // Send the jwt in the response
-    res.setHeader("Authorization", "Bearer " + token);
-    res.setHeader("x-refresh-token", "Bearer " + refreshToken);
+    res.setHeader('Authorization', 'Bearer ' + token);
+    res.setHeader('x-refresh-token', 'Bearer ' + refreshToken);
     res.status(200).send({
       id: user.id,
       email: user.email,
       username: user.username,
-      role: user.role
+      role: user.role,
     });
     return;
-  }
+  };
 
   public static changePassword = async (req: Request, res: Response) => {
     // Get ID from JWT
     const id = res.locals.jwtPayload.userId;
 
     // Get parameters from the body
-    const { oldPassword, newPassword }: IChangePasswordRequest = req.body;
+    const {oldPassword, newPassword}: IChangePasswordRequest = req.body;
     if (!(oldPassword && newPassword)) {
       res.status(400).send();
     }
@@ -88,6 +88,6 @@ class AuthController {
     userRepository.save(user);
 
     res.status(204).send();
-  }
+  };
 }
 export default AuthController;
