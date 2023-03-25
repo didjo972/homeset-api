@@ -12,9 +12,7 @@ services:
   database:
     restart: always
     # Official MaridaDB image from DockerHub (we use the last version)
-    image: 'mariadb:latest'
-
-    container_name: maria_db
+    image: 'postgres:latest'
 
     # By default, a MaridaDB database is running on the 3306 port.
     # If we want to access the database from our computer (outside the container),
@@ -24,12 +22,12 @@ services:
     # but take into consideration that it will change the way
     # you are connecting to your database.
     ports:
-      - 3306:3306
+      - 5432:5432
 
     environment:
-      MARIADB_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}" # The MaridaDB root password (useful to connect to the database)
-      MARIADB_DATABASE: "${MYSQL_DATABASE}" # The MaridaDB default database (automatically created at first launch)
       
+    env_file:
+      - .env # The name of your environment file (the one at the repository root)
 
     ####
     ## If you want to persist the database data, please uncomment the lines below.
@@ -43,7 +41,7 @@ services:
       # of `/var/lib/mysql`, automatically the change will appear in `db-data`.
       # You don't need to create the `db-data` folder. Docker Compose will do it for you.
       # - ./db/init.sql:/docker-entrypoint-initdb.d/init-db-01.sql
-      - "/db-data/:/var/lib/mysql"
+      - ./db-data/:/var/lib/mysql
 
     # restart: always
 
