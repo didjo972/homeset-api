@@ -4,7 +4,7 @@ import { User } from "./../entity/User";
 
 const connection = {
   async create() {
-    await createConnection(ormconfig);
+    await createConnection(ormconfig());
   },
 
   async close() {

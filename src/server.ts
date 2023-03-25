@@ -1,12 +1,8 @@
-import dotenv from "dotenv";
 // start the Express server
 import { app } from "./app";
-const defaultPort = 7000; // default port to listen
 
 class Server {
-  public static runServe = (port: number = defaultPort) => {
-    dotenv.config();
-    port = process.env.nodePort && !Number.isNaN(Number(process.env.nodePort)) ? Number(process.env.nodePort) : port;
+  public static runServe = (port: number) => {
     app.listen(port, () => {
       // tslint:disable-next-line:no-console
       console.log("################################################");

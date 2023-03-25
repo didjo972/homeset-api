@@ -1,13 +1,13 @@
 import { ConnectionOptions } from "typeorm";
 import { entities } from "./src/entity";
 
-export const ormconfig: ConnectionOptions = {
-  type: "mariadb",
+export const ormconfig = (): ConnectionOptions => {
+  return {type: "postgres",
   host: "host.docker.internal",
-  port: 3306,
-  username: "root",
-  password: "648d005a",
-  database: "homeset",
+  port: 5432,
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
   synchronize: true,
   logging: true,
   entities,
@@ -18,7 +18,5 @@ export const ormconfig: ConnectionOptions = {
     entitiesDir: "src/entity",
     migrationsDir: "src/migration"
   },
-  connectTimeout: 30000,
-  acquireTimeout: 30000,
-  trace: true
+  connectTimeoutMS: 30000,}
 };
