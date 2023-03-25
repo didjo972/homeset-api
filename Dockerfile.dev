@@ -1,23 +1,24 @@
 FROM node:16
 
 # Create app directory
-WORKDIR /usr
+WORKDIR /app
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 COPY package*.json ./
-COPY tsconfig.json ./
-COPY ormconfig.ts ./
-COPY swaggerconfig.json ./
-COPY .env ./
 
-COPY src ./src
-RUN ls -a
+# Install dependencies
+RUN npm install
 
-RUN rm -rf node_modules && npm install
+# Copy the rest of the application files
+COPY . .
 
+# Build the application
+RUN npm run build
+
+# Set environment variables
 ENV NODE_APP="Homeset-api"
 ENV NODE_ENV=dev
 
-CMD ["npm","run","start"]
+CMD ["npm","start"]

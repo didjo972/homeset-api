@@ -31,9 +31,6 @@ class AuthController {
       return;
     }
 
-    // tslint:disable-next-line:no-console
-    console.log(process.env);
-
     // Sing JWT, valid for 1 hour
     const [token, refreshToken] = await createTokens(
       user,
@@ -78,7 +75,7 @@ class AuthController {
       return;
     }
 
-    // Validate de model (password lenght)
+    // Validate the model (password lenght)
     user.password = newPassword;
     const errors = await validate(user);
     if (errors.length > 0) {

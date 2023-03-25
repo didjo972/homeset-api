@@ -1,5 +1,5 @@
 # A Docker Compose must always start with the version tag.
-version: '3'
+version: '3.9'
 
 # You should know that Docker Compose works with services.
 # 1 service = 1 container.
@@ -27,10 +27,9 @@ services:
       - 3306:3306
 
     environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD} # The MaridaDB root password (useful to connect to the database)
-      MARIADB_DATABASE: ${MARIADB_DATABASE} # The MaridaDB default database (automatically created at first launch)
-      MARIADB_USER: ${MARIADB_USER} # The MaridaDB user (useful to connect to the database)
-      MARIADB_PASSWORD: ${MARIADB_PASSWORD} # The MaridaDB password (useful to connect to the database)
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # The MaridaDB root password (useful to connect to the database)
+      MARIADB_DATABASE: ${MYSQL_DATABASE} # The MaridaDB default database (automatically created at first launch)
+      
 
     ####
     ## If you want to persist the database data, please uncomment the lines below.
@@ -69,7 +68,7 @@ services:
       context: .
       dockerfile: 'Dockerfile'
     ports:
-      - "${port}:${port}"
+      - "${PORT}:${PORT}"
     external_links:
       - database
     depends_on:

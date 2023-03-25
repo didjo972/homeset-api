@@ -5,7 +5,7 @@ export const ormconfig: ConnectionOptions = {
   type: "mariadb",
   host: "host.docker.internal",
   port: 3306,
-  username: "homeset",
+  username: "root",
   password: "648d005a",
   database: "homeset",
   synchronize: true,
