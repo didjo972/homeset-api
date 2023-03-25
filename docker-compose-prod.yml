@@ -27,8 +27,8 @@ services:
       - 3306:3306
 
     environment:
-      - MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # The MaridaDB root password (useful to connect to the database)
-      - MARIADB_DATABASE: ${MYSQL_DATABASE} # The MaridaDB default database (automatically created at first launch)
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # The MaridaDB root password (useful to connect to the database)
+      MARIADB_DATABASE: ${MYSQL_DATABASE} # The MaridaDB default database (automatically created at first launch)
       
 
     ####
