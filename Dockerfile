@@ -25,7 +25,7 @@ LABEL cicd="homeset-api-image"
 
 WORKDIR /app/dist
 
-COPY .env-prod .env
+COPY .env .env
 
 RUN npm install pm2 -g
 
