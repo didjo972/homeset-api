@@ -39,19 +39,19 @@ Developer config
 You can setup the **ormconfig.json** file to configure your database connexion.\ If you don't have one, you can use the docker-compose and adapt it for your use.\
 If you use the docker-compose, you need to create a .env file at the root project and fill it as follow :
 ```
-# The MaridaDB root password (useful to connect to the database)
-MYSQL_ROOT_PASSWORD: 'password'
-# The MaridaDB default database (automatically created at first launch)
-MYSQL_DATABASE: 'yourschema'
-# The MaridaDB user (useful to connect to the database)
-MYSQL_USER: 'username'
-# The MaridaDB password (useful to connect to the database)
-MYSQL_PASSWORD: 'somepassword'
-jwtSecret = 'your jwtSecret token'
+POSTGRES_USER='username'
+POSTGRES_PASSWORD='password'
+POSTGRES_DB='dn_name'
+# The posgres_host should be 'host.docker.internal' in dev
+#                            'database'             in prod
+POSTGRES_HOST='host.docker.internal'
+POSTGRES_PORT=15432
+PORT='3000'
+jwtSecret='asecretkey'
 ```
 Then run this command
 ```
-docker-compose up
+docker-compose up --build
 ```
 
 Mail Server config
@@ -80,7 +80,7 @@ npm run start
 ```
 Or
 ```
-docker-compose -f docker-compose.yml up
+docker-compose up
 ```
 With --build if necessary
 Open your local browser and verify the sample node api sample is working by accessing :
