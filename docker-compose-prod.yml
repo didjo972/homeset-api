@@ -27,8 +27,8 @@ services:
 
     # The `volumes` tag allows us to share a folder with our container.
     # Its syntax is as follows: [folder path on our machine]:[folder path to retrieve in the container]
-    volumes:
-      - ./db-data:/var/lib/postgresql/data
+    # volumes:
+    #   - ./db-data:/var/lib/postgresql/data
 
   # Mailhog service
   # Uncomment to run the dev server mail
