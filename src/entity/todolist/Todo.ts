@@ -1,13 +1,10 @@
-import {IsBoolean} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import {User} from '../User';

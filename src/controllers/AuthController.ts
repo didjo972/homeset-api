@@ -9,7 +9,7 @@ import {IChangePasswordRequest, ILoginRequest} from '../shared/interfaces';
 class AuthController {
   public static login = async (req: Request, res: Response) => {
     // Check if username and password are set
-    const {email, password}: ILoginRequest = req.body;
+    const {email, password}: ILoginRequest = req.body as ILoginRequest;
     if (!email || email === '' || !password || password === '') {
       res.status(400).send();
       return;
@@ -52,10 +52,10 @@ class AuthController {
 
   public static changePassword = async (req: Request, res: Response) => {
     // Get ID from JWT
-    const id = res.locals.jwtPayload.userId;
+    const id = res.locals.jwtPayload.userId as number;
 
     // Get parameters from the body
-    const {oldPassword, newPassword}: IChangePasswordRequest = req.body;
+    const {oldPassword, newPassword}: IChangePasswordRequest = req.body as IChangePasswordRequest;
     if (!(oldPassword && newPassword)) {
       res.status(400).send();
     }

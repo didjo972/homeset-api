@@ -18,7 +18,7 @@ describe('User Test Suite', () => {
     // const response = await supertest(app)
     //  .post("/auth/login")
     //  .send({email: "admin@admin.com", password: "secretadmin"});
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     // console.log(response.header);
     // expect(response.status).toBe(200);
     // await supertest(app).get("/users/1");

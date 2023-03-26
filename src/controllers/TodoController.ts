@@ -1,9 +1,7 @@
 import {validate} from 'class-validator';
 import {Request, Response} from 'express';
-import {getRepository} from 'typeorm';
 import {Task} from '../entity/todolist/Task';
 import {Todo} from '../entity/todolist/Todo';
-import {User} from '../entity/User';
 import TodoRepository from '../repositories/TodoRepository';
 import {ICreateTodoRequest, IUpdateTodoRequest} from '../shared/interfaces';
 import Utils from './Utils';
@@ -47,7 +45,7 @@ class TodoController {
     const {name, status, tasks = []}: IUpdateTodoRequest = req.body;
 
     // Get the ID from the url
-    const id = req.params.id;
+    const id = req.params.id as string;
 
     // Get the todo from database
     const todoRepository = new TodoRepository();
@@ -132,7 +130,7 @@ class TodoController {
       res.status(404).send('Todo not found');
       return;
     }
-    await todoRepository.delete(id);
+    await todoRepository.delete(todo.id);
 
     // After all send a 204 (no content, but accepted) response
     res.status(204).send();

@@ -12,7 +12,6 @@ COPY ormconfig.ts ./
 COPY swaggerconfig.json ./
 COPY src ./src
 COPY tsconfig.json ./
-COPY tslint.json ./
 
 RUN rm -rf test
 

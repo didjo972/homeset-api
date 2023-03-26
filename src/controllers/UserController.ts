@@ -36,7 +36,8 @@ class UserController {
     const id = req.params.id;
 
     // Get values from the body
-    const {username, role, phone} = req.body;
+    // FIXME Type this request body
+    const {username, role, phone} = req.body as {username: string, role: string, phone: string};
 
     // Try to find user on database
     const userRepository = getRepository(User);
@@ -90,7 +91,7 @@ class UserController {
       res.status(404).send('User not found');
       return;
     }
-    await userRepository.delete(id);
+    await userRepository.delete(user.id);
 
     // After all send a 204 (no content, but accepted) response
     res.status(204).send();

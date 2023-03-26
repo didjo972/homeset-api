@@ -11,7 +11,6 @@ class MailService {
       port: 1025,
       secure: false,
     };
-    this.transporter = null;
     try {
       if (process.env.NODE_ENV === 'prod') {
         this.transporter = nodemailer.createTransport(transport);
@@ -28,7 +27,7 @@ class MailService {
         this.transporter = nodemailer.createTransport(transport);
       }
     } catch (e) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.error(e);
       throw new MailError('An error occured on initializing the mail service');
     }
@@ -41,7 +40,7 @@ class MailService {
     bodyText: string,
     bodyHtml?: string,
   ) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.info('Sending a mail to %s', emailTo);
     const mailOptions = {
       from: 'admin@admin.com',
@@ -51,7 +50,7 @@ class MailService {
       html: bodyHtml, // The html content
     };
     this.transporter.sendMail(mailOptions).catch(e => {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.error(e);
       throw new MailError('An error occured on sending mail');
     });

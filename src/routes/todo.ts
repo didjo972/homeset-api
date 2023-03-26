@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import TodoController from '../controllers/TodoController';
-import {checkJwt, checkRole} from '../middlewares/jwt';
+import {checkJwt} from '../middlewares/jwt';
 
 /**
  * @swagger

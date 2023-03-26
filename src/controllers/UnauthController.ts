@@ -70,7 +70,7 @@ class UnauthController {
       mailService.sendResetPasswordMail(userFound.email);
       res.status(200).send();
     } catch (e) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.error(e);
       if (e instanceof MailError) {
         res.status(500).send('Internal Server Error');

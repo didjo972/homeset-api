@@ -8,7 +8,7 @@ const connection = {
   },
 
   async close() {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.log('close connection');
     await getConnection().close();
   },

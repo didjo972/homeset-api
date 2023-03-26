@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import {getRepository} from 'typeorm';
 
 import {User} from '../entity/User';
@@ -10,13 +10,13 @@ export const checkJwt = async (
   next: NextFunction,
 ) => {
   // Get the jwt token from the head
-  let token = req.headers.authorization as string;
+  let token = req.headers.authorization;
   let jwtPayload;
 
   // Try to validate the token and get data
   try {
     token = token.startsWith('Bearer ') && token.substring(7);
-    jwtPayload = jwt.verify(token, process.env.jwtSecret) as any;
+    jwtPayload = jwt.verify(token, process.env.jwtSecret) as JwtPayload;
     res.locals.jwtPayload = jwtPayload;
   } catch (error) {
     // If token is not valid, try to refresh the token
@@ -87,13 +87,13 @@ export const createTokens = async (
 export const refreshTokens = async (refreshToken: string) => {
   let jwtPayload;
   try {
-    const data: any = jwt.decode(refreshToken);
+    const data = jwt.decode(refreshToken) as JwtPayload;
     jwtPayload = data;
   } catch (err) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error(err);
   }
-  const {userId} = jwtPayload;
+  const {userId} = jwtPayload as {[key: string]: string};
   if (!userId) {
     throw new Error('This user does not exist.');
   }

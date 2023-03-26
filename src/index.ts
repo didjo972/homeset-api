@@ -16,8 +16,8 @@ createConnection(ormconfig())
     Server.runServe(PORT);
   })
   .catch(err => {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error(err);
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.log('Could not connect to the database.');
   });

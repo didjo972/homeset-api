@@ -5,8 +5,8 @@ import {checkJwt, checkRole} from '../middlewares/jwt';
 /**
  * @swagger
  * tags:
- *   name: Users
- *   description: API to manage your users.
+ * name: Users
+ * description: API to manage your users.
  */
 const router = Router();
 
