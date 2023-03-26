@@ -10,10 +10,11 @@ services:
   # but you can use the name of your choice.
   # Note: This may change the commands you are going to use a little bit.
   database:
-    container_name: postgres
     restart: always
     # Official postgres image from DockerHub (we use the last version)
     image: 'postgres:latest'
+
+    container_name: 'postgres-homeset-prod'
 
     ports:
       - 15432:5432      
@@ -29,14 +30,12 @@ services:
     volumes:
       - ./db-data:/var/lib/postgresql/data
 
-    # restart: always
-
   # Mailhog service
   # Uncomment to run the dev server mail
   mailhog:
     image: 'mailhog/mailhog'
 
-    container_name: 'mailhog'
+    container_name: 'mailhog-homeset-prod'
 
     # the SMTP server starts on port 1025
     # the HTTP server starts on port 8025
@@ -47,7 +46,7 @@ services:
   homeset-api:
     restart: always
     image: 'homeset-api'
-    container_name: 'homeset-api-prod'
+    container_name: 'api-homeset-prod'
     build:
       context: .
       dockerfile: 'Dockerfile'

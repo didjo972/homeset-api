@@ -11,8 +11,10 @@ services:
   # Note: This may change the commands you are going to use a little bit.
   database:
     restart: always
-    # Official MaridaDB image from DockerHub (we use the last version)
+    # Official postgres image from DockerHub (we use the last version)
     image: 'postgres:latest'
+
+    container_name: 'postgres-homeset-dev'
 
     ports:
       - 15432:5432      
@@ -40,7 +42,7 @@ services:
   mailhog:
     image: 'mailhog/mailhog'
 
-    container_name: 'mailhog'
+    container_name: 'mailhog-homeset-dev'
 
     # the SMTP server starts on port 1025
     # the HTTP server starts on port 8025
@@ -51,7 +53,7 @@ services:
   homeset-api:
     restart: always
     image: 'homeset-api'
-    container_name: 'homeset-api-dev'
+    container_name: 'api-homeset-dev'
     build:
       context: .
       dockerfile: 'Dockerfile.dev'
