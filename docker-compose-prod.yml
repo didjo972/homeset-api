@@ -52,6 +52,8 @@ services:
       dockerfile: 'Dockerfile'
     ports:
       - "${PORT}:${PORT}"
+    env_file:
+      - .env # The name of your environment file (the one at the repository root)
     external_links:
       - database
     depends_on:
