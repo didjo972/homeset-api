@@ -4,7 +4,7 @@ import { entities } from "./src/entity";
 export const ormconfig = (): ConnectionOptions => {
   return {type: "postgres",
   host: "host.docker.internal",
-  port: 5432,
+  port: 15432,
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,

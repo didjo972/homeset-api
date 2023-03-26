@@ -15,7 +15,7 @@ services:
     image: 'postgres:latest'
 
     ports:
-      - 5432:5432      
+      - 15432:5432      
     env_file:
       - .env # The name of your environment file (the one at the repository root)
 

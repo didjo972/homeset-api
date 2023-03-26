@@ -35,7 +35,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.3.0",
     "typeorm": "0.2.41",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
