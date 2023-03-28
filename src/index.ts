@@ -7,17 +7,17 @@ import Server from './server';
 dotenv.config();
 
 const PORT = !Number.isNaN(Number(process.env.PORT))
-  ? Number(process.env.PORT)
-  : 3000;
+    ? Number(process.env.PORT)
+    : 3000;
 
-// Connectes to the database -> then start the express app
+// Connect to the database -> then start the express app
 createConnection(ormconfig())
-  .then(async () => {
-    Server.runServe(PORT);
-  })
-  .catch(err => {
-    // eslint-disable-next-line no-console
-    console.error(err);
-    // eslint-disable-next-line no-console
-    console.log('Could not connect to the database.');
-  });
+    .then(() => {
+        Server.runServe(PORT);
+    })
+    .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        // eslint-disable-next-line no-console
+        console.log('Could not connect to the database.');
+    });

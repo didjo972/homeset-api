@@ -1,22 +1,23 @@
-import {Router} from 'express';
+import {RequestHandler, Router} from 'express';
 import UserController from '../controllers/UserController';
 import {checkJwt, checkRole} from '../middlewares/jwt';
 
 /**
  * @swagger
  * tags:
- * name: Users
- * description: API to manage your users.
+ *  name: Users
+ *  description: API to manage your users.
  */
 const router = Router();
 
 /**
  * @swagger
- * path:
  * /users:
  *    get:
- *      summary: Get all users
+ *      description: Get all users
  *      tags: [Users]
+ *      produces:
+ *        - application/json
  *      security:
  *        - jwt: []
  *      responses:
@@ -25,10 +26,12 @@ const router = Router();
  *          content:
  *            application/json:
  *              schema:
- *                $ref: "#/components/schemas/User"
+ *                  type: "array"
+ *                  items:
+ *                      $ref: "#/components/schemas/User"
  */
 // Get all users
-router.get('/', [checkJwt, checkRole(['ADMIN'])], UserController.listAll);
+router.get('/', [checkJwt, checkRole(['ADMIN'])], UserController.listAll as RequestHandler);
 
 /**
  * @swagger
@@ -52,12 +55,13 @@ router.get('/', [checkJwt, checkRole(['ADMIN'])], UserController.listAll);
  *          content:
  *            application/json:
  *              schema:
- *                $ref: "#/components/schemas/User"
+ *              type: object
+ *              $ref: "#/components/schemas/User"
  *        "404":
  *          description: User not found.
  */
 // Get one user
-router.get('/:id([0-9]+)', [checkJwt], UserController.getOneById);
+router.get('/:id([0-9]+)', [checkJwt], UserController.getOneById as RequestHandler);
 
 /**
  * @swagger
@@ -89,9 +93,9 @@ router.get('/:id([0-9]+)', [checkJwt], UserController.getOneById);
  */
 // Edit one user
 router.patch(
-  '/:id([0-9]+)',
-  [checkJwt, checkRole(['ADMIN'])],
-  UserController.editUser,
+    '/:id([0-9]+)',
+    [checkJwt, checkRole(['ADMIN'])],
+    UserController.editUser as RequestHandler
 );
 
 /**
@@ -118,9 +122,9 @@ router.patch(
  */
 // Delete one user
 router.delete(
-  '/:id([0-9]+)',
-  [checkJwt, checkRole(['ADMIN'])],
-  UserController.deleteUser,
+    '/:id([0-9]+)',
+    [checkJwt, checkRole(['ADMIN'])],
+    UserController.deleteUser as RequestHandler
 );
 
 export default router;

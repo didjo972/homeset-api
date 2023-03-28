@@ -1,48 +1,48 @@
 import {createConnection, getConnection, getRepository} from 'typeorm';
-import {ormconfig} from './../../ormconfig';
-import {User} from './../entity/User';
+import {ormconfig} from '../../ormconfig';
+import {User} from '../entity/User';
 
 const connection = {
-  async create() {
-    await createConnection(ormconfig());
-  },
+    create: () => {
+        createConnection(ormconfig()).catch(e => console.error(e));
+    },
 
-  async close() {
-    // eslint-disable-next-line no-console
-    console.log('close connection');
-    await getConnection().close();
-  },
+    close: () => {
+        // eslint-disable-next-line no-console
+        console.log('close connection');
+        getConnection().close().catch(e => console.error(e));
+    },
 
-  async clear() {
-    const dbConnection = getConnection();
-    const entities = dbConnection.entityMetadatas;
+    clear: () => {
+        const dbConnection = getConnection();
+        const entities = dbConnection.entityMetadatas;
 
-    entities.forEach(async entity => {
-      const repository = dbConnection.getRepository(entity.name);
-      await repository.query(`DELETE FROM ${entity.tableName};`);
-    });
-  },
+        entities.forEach(entity => {
+            const repository = dbConnection.getRepository(entity.name);
+            repository.query(`DELETE FROM ${entity.tableName};`).catch(e => console.error(e));
+        });
+    },
 
-  async createTestUsers() {
-    await getConnection();
-    // Create a test user too
-    const user = new User();
-    user.email = 'test@test.com';
-    user.password = 'secret';
-    user.username = 'stan';
-    user.role = 'USER';
-    user.hashPassword();
+    createTestUsers: () => {
+        getConnection();
+        // Create a test user too
+        const user = new User();
+        user.email = 'test@test.com';
+        user.password = 'secret';
+        user.username = 'stan';
+        user.role = 'USER';
+        user.hashPassword();
 
-    await getRepository(User).save(user);
+        getRepository(User).save(user).catch(e => console.error(e));
 
-    const admin = new User();
-    admin.email = 'admin@admin.com';
-    admin.password = 'secretadmin';
-    admin.username = 'jerry';
-    admin.role = 'ADMIN';
-    admin.hashPassword();
-    await getRepository(User).save(admin);
-  },
+        const admin = new User();
+        admin.email = 'admin@admin.com';
+        admin.password = 'secretadmin';
+        admin.username = 'jerry';
+        admin.role = 'ADMIN';
+        admin.hashPassword();
+        getRepository(User).save(admin).catch(e => console.error(e));
+    },
 };
 
 export {connection};

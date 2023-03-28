@@ -2,15 +2,7 @@ import * as bcrypt from 'bcryptjs';
 import {v4 as uuidv4} from 'uuid';
 
 import {IsEmail, IsNotEmpty, IsOptional, Length} from 'class-validator';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-  UpdateDateColumn,
-} from 'typeorm';
+import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn,} from 'typeorm';
 import {CookingReceip} from './cookingbook/CookingReceip';
 import {Vehicle} from './garage/Vehicle';
 import {Item} from './saveobject/Item';
@@ -64,64 +56,64 @@ import {Todo} from './todolist/Todo';
 @Entity()
 @Unique(['email'])
 export class User {
-  @PrimaryGeneratedColumn()
-  public id: number;
+    @PrimaryGeneratedColumn()
+    public id: number;
 
-  @Column()
-  @IsEmail()
-  public email: string;
+    @Column()
+    @IsEmail()
+    public email: string;
 
-  @Column()
-  @Length(4, 20)
-  public username: string;
+    @Column()
+    @Length(4, 20)
+    public username: string;
 
-  @Column()
-  @Length(4, 100)
-  public password: string;
+    @Column()
+    @Length(4, 100)
+    public password: string;
 
-  @Column()
-  public refreshSecret: string;
+    @Column()
+    public refreshSecret: string;
 
-  @Column()
-  @IsNotEmpty()
-  public role: string;
+    @Column()
+    @IsNotEmpty()
+    public role: string;
 
-  @Column({nullable: true})
-  @IsOptional()
-  public phone: string;
+    @Column({nullable: true})
+    @IsOptional()
+    public phone: string;
 
-  @OneToMany(() => CookingReceip, cookingReceip => cookingReceip.owner)
-  public cookingReceips: CookingReceip[];
+    @OneToMany(() => CookingReceip, cookingReceip => cookingReceip.owner)
+    public cookingReceips: CookingReceip[];
 
-  @OneToMany(() => Place, place => place.owner)
-  public places: Place[];
+    @OneToMany(() => Place, place => place.owner)
+    public places: Place[];
 
-  @OneToMany(() => Item, item => item.owner)
-  public items: Item[];
+    @OneToMany(() => Item, item => item.owner)
+    public items: Item[];
 
-  @OneToMany(() => Todo, todo => todo.owner)
-  public todos: Todo[];
+    @OneToMany(() => Todo, todo => todo.owner)
+    public todos: Todo[];
 
-  @OneToMany(() => Vehicle, vehicle => vehicle.owner)
-  public vehicles: Vehicle[];
+    @OneToMany(() => Vehicle, vehicle => vehicle.owner)
+    public vehicles: Vehicle[];
 
-  @Column()
-  @CreateDateColumn()
-  public createdAt: Date;
+    @Column()
+    @CreateDateColumn()
+    public createdAt: Date;
 
-  @Column()
-  @UpdateDateColumn()
-  public updatedAt: Date;
+    @Column()
+    @UpdateDateColumn()
+    public updatedAt: Date;
 
-  public hashPassword() {
-    this.password = bcrypt.hashSync(this.password, 8);
-  }
+    public hashPassword() {
+        this.password = bcrypt.hashSync(this.password, 8);
+    }
 
-  public createOrUpdateRefreshSecret() {
-    this.refreshSecret = uuidv4();
-  }
+    public createOrUpdateRefreshSecret() {
+        this.refreshSecret = uuidv4();
+    }
 
-  public checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
-    return bcrypt.compareSync(unencryptedPassword, this.password);
-  }
+    public checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
+        return bcrypt.compareSync(unencryptedPassword, this.password);
+    }
 }

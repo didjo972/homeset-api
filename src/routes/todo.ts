@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import {RequestHandler, Router} from 'express';
 import TodoController from '../controllers/TodoController';
 import {checkJwt} from '../middlewares/jwt';
 
@@ -33,7 +33,7 @@ const router = Router();
  *                      $ref: "#/components/schemas/Todo"
  */
 // Create a todo
-router.post('/', [checkJwt], TodoController.newTodo);
+router.post('/', [checkJwt], TodoController.newTodo as RequestHandler);
 
 /**
  * @swagger
@@ -53,7 +53,7 @@ router.post('/', [checkJwt], TodoController.newTodo);
  *                $ref: "#/components/schemas/Todo"
  */
 // Get all todos
-router.get('/', [checkJwt], TodoController.listAll);
+router.get('/', [checkJwt], TodoController.listAll as RequestHandler);
 
 /**
  * @swagger
@@ -82,7 +82,7 @@ router.get('/', [checkJwt], TodoController.listAll);
  *          description: Todo not found.
  */
 // Get one todo
-router.get('/:id([0-9]+)', [checkJwt], TodoController.getOneById);
+router.get('/:id([0-9]+)', [checkJwt], TodoController.getOneById as RequestHandler);
 
 /**
  * @swagger
@@ -113,7 +113,7 @@ router.get('/:id([0-9]+)', [checkJwt], TodoController.getOneById);
  *          description: Todo not found.
  */
 // Edit one todo
-router.patch('/:id([0-9]+)', [checkJwt], TodoController.editTodo);
+router.patch('/:id([0-9]+)', [checkJwt], TodoController.editTodo as RequestHandler);
 
 /**
  * @swagger
@@ -138,6 +138,6 @@ router.patch('/:id([0-9]+)', [checkJwt], TodoController.editTodo);
  *          description: Todo not found.
  */
 // Delete one todo
-router.delete('/:id([0-9]+)', [checkJwt], TodoController.deleteTodo);
+router.delete('/:id([0-9]+)', [checkJwt], TodoController.deleteTodo as RequestHandler);
 
 export default router;

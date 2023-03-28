@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import {RequestHandler, Router} from 'express';
 import UnauthController from '../controllers/UnauthController';
 
 /**
@@ -21,7 +21,7 @@ const router = Router();
  *          description: Hello world
  */
 // Get hello world
-router.get('/', UnauthController.helloWorld);
+router.get('/', UnauthController.helloWorld as RequestHandler);
 
 /**
  * @swagger
@@ -35,7 +35,7 @@ router.get('/', UnauthController.helloWorld);
  *          description: Ping
  */
 // Ping
-router.get('/ping', UnauthController.ping);
+router.get('/ping', UnauthController.ping as RequestHandler);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ router.get('/ping', UnauthController.ping);
  *                      $ref: "#/components/schemas/User"
  */
 // Create an account
-router.post('/createAccount', UnauthController.newUser);
+router.post('/createAccount', UnauthController.newUser as RequestHandler);
 
 /**
  * @swagger
@@ -83,6 +83,6 @@ router.post('/createAccount', UnauthController.newUser);
  *          description: The request to reset the mail has been sent
  */
 // Reset password
-router.post('/resetPassword', UnauthController.resetPassword);
+router.post('/resetPassword', UnauthController.resetPassword as RequestHandler);
 
 export default router;
