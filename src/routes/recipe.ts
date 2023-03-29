@@ -3,8 +3,8 @@ import {Router} from 'express';
 /**
  * @swagger
  * tags:
- *   name: Receips
- *   description: API to manage your receips.
+ *   name: Recipes
+ *   description: API to manage your recipes.
  */
 const router = Router();
 

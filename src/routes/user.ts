@@ -14,7 +14,7 @@ const router = Router();
  * @swagger
  * /users:
  *    get:
- *      description: Get all users
+ *      summary: Get all users
  *      tags: [Users]
  *      produces:
  *        - application/json

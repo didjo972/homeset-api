@@ -1,5 +1,5 @@
 import {getRepository, MigrationInterface} from 'typeorm';
-import {User} from '../entity/User';
+import {User} from '../entity/user/User';
 
 export class CreateAdminUser1583402953078 implements MigrationInterface {
     public async up(): Promise<any> {

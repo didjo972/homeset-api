@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from 'express';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import {getRepository} from 'typeorm';
 
-import {User} from '../entity/User';
+import {User} from '../entity/user/User';
 import {IJwtPayload} from "../shared/interfaces";
 
 export const checkJwt = async (

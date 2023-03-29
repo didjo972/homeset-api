@@ -2,74 +2,72 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    ManyToMany,
     ManyToOne,
-    OneToMany,
     PrimaryGeneratedColumn,
+    Unique,
     UpdateDateColumn,
 } from 'typeorm';
 import {User} from '../user/User';
-import {Servicing} from './Servicing';
+import {Group} from "../user/Group";
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Vehicle:
+ *     CookingRecipe:
  *       type: object
  *       properties:
  *         id:
  *           type: number
  *           readOnly: true
- *           description: The vehicle ID in DB.
+ *           description: The cooking recipe ID in DB.
  *           example: "76538276"
- *         brand:
+ *         name:
  *           type: string
- *           description: The brand.
- *           example: "Opel"
- *         model:
+ *           description: The cooking recipe name.
+ *           example: "Bokit"
+ *         description:
  *           type: string
- *           description: The model.
- *           example: "Insignia"
- *         identification:
- *           type: string
- *           description: The identification number.
- *           example: "DP-675-VX"
- *         servicings:
- *           type: "array"
- *           items:
- *              $ref: '#/components/schemas/Servicing'
+ *           description: The cooking recipe description.
+ *           example: "- 500 g flour\n- 0.5L water\n- pinch of salt\n..."
+ *         nbPerson:
+ *           type: number
+ *           description: The number of people.
+ *           example: "8"
  *         owner:
  *           $ref: '#/components/schemas/User'
  *         createdAt:
  *           type: string
  *           readOnly: true
  *           format: date-time
- *           description: The vehicle's creation date
+ *           description: The cooking recipe's creation date
  *         updatedAt:
  *           type: string
  *           readOnly: true
  *           format: date-time
- *           description: The vehicle's update date
+ *           description: The cooking recipe's update date
  */
 @Entity()
-export class Vehicle {
+@Unique(['name'])
+export class CookingRecipe {
     @PrimaryGeneratedColumn()
     public id: number;
 
     @Column()
-    public brand: string;
+    public name: string;
 
     @Column()
-    public model: string;
+    public description: string;
 
     @Column()
-    public identification: string;
+    public nbPerson: number;
 
-    @OneToMany(() => Servicing, servicing => servicing.vehicle)
-    public servicings: Servicing[];
-
-    @ManyToOne(() => User, owner => owner.vehicles)
+    @ManyToOne(() => User, owner => owner.cookingRecipes)
     public owner: User;
+
+    @ManyToMany(() => Group, group => group.cookingRecipes)
+    public groups: Group[];
 
     @Column()
     @CreateDateColumn()

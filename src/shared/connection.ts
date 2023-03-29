@@ -1,9 +1,10 @@
 import {createConnection, getConnection, getRepository} from 'typeorm';
 import {ormconfig} from '../../ormconfig';
-import {User} from '../entity/User';
+import {User} from '../entity/user/User';
 
 const connection = {
     create: () => {
+        console.log(process.env);
         createConnection(ormconfig()).catch(e => console.error(e));
     },
 

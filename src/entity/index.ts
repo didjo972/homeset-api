@@ -1,4 +1,4 @@
-import {CookingReceip} from './cookingbook/CookingReceip';
+import {CookingRecipe} from './cookingbook/CookingRecipe';
 import {Element} from './cookingbook/Element';
 import {Ingredient} from './cookingbook/Ingredient';
 import {Act} from './garage/Act';
@@ -8,7 +8,8 @@ import {Item} from './saveobject/Item';
 import {Place} from './saveobject/Place';
 import {Task} from './todolist/Task';
 import {Todo} from './todolist/Todo';
-import {User} from './User';
+import {User} from './user/User';
+import {Group} from "./user/Group";
 
 export const entities = [
     User,
@@ -16,10 +17,11 @@ export const entities = [
     Task,
     Item,
     Place,
-    CookingReceip,
+    CookingRecipe,
     Element,
     Ingredient,
     Act,
     Servicing,
     Vehicle,
+    Group,
 ];

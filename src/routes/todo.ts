@@ -61,7 +61,7 @@ router.get('/', [checkJwt], TodoController.listAll as RequestHandler);
  * /todos/{id}:
  *    get:
  *      summary: Get a todo by id
- *      tags: [Todo]
+ *      tags: [Todos]
  *      security:
  *        - jwt: []
  *      parameters:

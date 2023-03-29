@@ -1,6 +1,6 @@
 import {Response} from 'express';
 import {getRepository} from 'typeorm';
-import {User} from '../entity/User';
+import {User} from '../entity/user/User';
 import {IJwtPayload} from "../shared/interfaces";
 
 class Utils {

@@ -2,12 +2,21 @@ import * as bcrypt from 'bcryptjs';
 import {v4 as uuidv4} from 'uuid';
 
 import {IsEmail, IsNotEmpty, IsOptional, Length} from 'class-validator';
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn,} from 'typeorm';
-import {CookingReceip} from './cookingbook/CookingReceip';
-import {Vehicle} from './garage/Vehicle';
-import {Item} from './saveobject/Item';
-import {Place} from './saveobject/Place';
-import {Todo} from './todolist/Todo';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToMany,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    Unique,
+    UpdateDateColumn,
+} from 'typeorm';
+import {CookingRecipe} from '../cookingbook/CookingRecipe';
+import {Vehicle} from '../garage/Vehicle';
+import {Item} from '../saveobject/Item';
+import {Todo} from '../todolist/Todo';
+import {Group} from "./Group";
 
 /**
  * @swagger
@@ -22,7 +31,7 @@ import {Todo} from './todolist/Todo';
  *           description: The user ID in DB.
  *           example: "76538276"
  *         email:
- *           type: sring
+ *           type: string
  *           description: The user email.
  *           example: "toto@mail.com"
  *         username:
@@ -42,6 +51,26 @@ import {Todo} from './todolist/Todo';
  *           type: string
  *           description: The user's phone
  *           example: "0780000000"
+ *         cookingRecipes:
+ *           type: "array"
+ *           items:
+ *              $ref: '#/components/schemas/CookingRecipe'
+ *         items:
+ *           type: "array"
+ *           items:
+ *              $ref: '#/components/schemas/Item'
+ *         todos:
+ *           type: "array"
+ *           items:
+ *              $ref: '#/components/schemas/Todo'
+ *         vehicles:
+ *           type: "array"
+ *           items:
+ *              $ref: '#/components/schemas/Vehicle'
+ *         groups:
+ *           type: "array"
+ *           items:
+ *              $ref: '#/components/schemas/Group'
  *         createdAt:
  *           type: string
  *           readOnly: true
@@ -82,11 +111,8 @@ export class User {
     @IsOptional()
     public phone: string;
 
-    @OneToMany(() => CookingReceip, cookingReceip => cookingReceip.owner)
-    public cookingReceips: CookingReceip[];
-
-    @OneToMany(() => Place, place => place.owner)
-    public places: Place[];
+    @OneToMany(() => CookingRecipe, cookingRecipe => cookingRecipe.owner)
+    public cookingRecipes: CookingRecipe[];
 
     @OneToMany(() => Item, item => item.owner)
     public items: Item[];
@@ -96,6 +122,9 @@ export class User {
 
     @OneToMany(() => Vehicle, vehicle => vehicle.owner)
     public vehicles: Vehicle[];
+
+    @ManyToMany(() => Group, group => group.users)
+    public groups: Group[];
 
     @Column()
     @CreateDateColumn()

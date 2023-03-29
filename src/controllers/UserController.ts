@@ -1,7 +1,7 @@
 import {validate} from 'class-validator';
 import {Request, Response} from 'express';
 import {getRepository} from 'typeorm';
-import {User} from '../entity/User';
+import {User} from '../entity/user/User';
 import {IEditUserRequest} from "../shared/interfaces";
 
 class UserController {
