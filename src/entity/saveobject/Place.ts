@@ -3,7 +3,6 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    ManyToOne,
     PrimaryGeneratedColumn,
     Unique,
     UpdateDateColumn,
