@@ -43,6 +43,12 @@ services:
       - "1025:1025"
       - "8025:8025"
 
+    volumes:
+      -
+        type: bind
+        source: /postgres-data
+        target: /var/lib/postgresql/data
+
   homeset-api:
     restart: always
     image: 'homeset-api'
