@@ -23,11 +23,11 @@ const swaggerDefinition: SwaggerDefinition = {
             email: "didjo972@gmail.com"
         }
     },
-    servers: [
-        {
-            url: "http://localhost:3000/"
-        }
-    ],
+    // servers: [
+    //     {
+    //         url: "http://localhost:3000/"
+    //     }
+    // ],
     components: {
         securitySchemes: {
             jwt: {

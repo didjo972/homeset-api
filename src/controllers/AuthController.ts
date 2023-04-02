@@ -21,6 +21,7 @@ class AuthController {
         try {
             user = await userRepository.findOneOrFail({where: {email}});
         } catch (error) {
+            console.error(error);
             res.status(401).send();
             return;
         }
