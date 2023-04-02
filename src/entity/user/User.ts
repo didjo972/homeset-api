@@ -53,22 +53,27 @@ import {Group} from "./Group";
  *           example: "0780000000"
  *         cookingRecipes:
  *           type: "array"
+ *           readOnly: true
  *           items:
  *              $ref: '#/components/schemas/CookingRecipe'
  *         items:
  *           type: "array"
+ *           readOnly: true
  *           items:
  *              $ref: '#/components/schemas/Item'
  *         todos:
  *           type: "array"
+ *           readOnly: true
  *           items:
  *              $ref: '#/components/schemas/Todo'
  *         vehicles:
  *           type: "array"
+ *           readOnly: true
  *           items:
  *              $ref: '#/components/schemas/Vehicle'
  *         groups:
  *           type: "array"
+ *           readOnly: true
  *           items:
  *              $ref: '#/components/schemas/Group'
  *         createdAt:

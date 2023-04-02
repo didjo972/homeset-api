@@ -28,19 +28,23 @@ import {Item} from "../saveobject/Item";
  *           description: The booking name.
  *           example: "Bokit"
  *         users:
+ *           readOnly: true
  *           type: "array"
  *           items:
  *              $ref: '#/components/schemas/User'
  *         cookingRecipes:
+ *           readOnly: true
  *           type: "array"
  *           items:
  *              $ref: '#/components/schemas/CookingRecipe'
  *         todos:
  *           type: "array"
+ *           readOnly: true
  *           items:
  *              $ref: '#/components/schemas/Todo'
  *         items:
  *           type: "array"
+ *           readOnly: true
  *           items:
  *              $ref: '#/components/schemas/Item'
  *         createdAt:

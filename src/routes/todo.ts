@@ -15,7 +15,7 @@ const router = Router();
  * path:
  * /todos:
  *    post:
- *      summary: Create a new account
+ *      summary: Create a new todo
  *      tags: [Todos]
  *      requestBody:
  *          required: true

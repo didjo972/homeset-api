@@ -29,6 +29,7 @@ import {Vehicle} from './Vehicle';
  *         vehicle:
  *           $ref: '#/components/schemas/Vehicle'
  *         acts:
+ *           readOnly: true
  *           type: "array"
  *           items:
  *              $ref: '#/components/schemas/Act'

@@ -35,6 +35,7 @@ import {Servicing} from './Servicing';
  *           description: The identification number.
  *           example: "DP-675-VX"
  *         servicings:
+ *           readOnly: true
  *           type: "array"
  *           items:
  *              $ref: '#/components/schemas/Servicing'

@@ -33,6 +33,7 @@ import {Group} from "../user/Group";
  *           example: "true"
  *         tasks:
  *           type: "array"
+ *           readOnly: true
  *           items:
  *              $ref: '#/components/schemas/Task'
  *         owner:
