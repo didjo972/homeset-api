@@ -38,8 +38,8 @@ const swaggerDefinition: SwaggerDefinition = {
             }
         }
     },
-    host: `localhost:3000`, // Host (optional)
-    basePath: '/', // Base path (optional)
+    // host: `localhost:3000`, // Host (optional)
+    // basePath: '/', // Base path (optional)
 };
 
 // Options for the swagger docs
@@ -48,7 +48,7 @@ const options: Options = {
     swaggerDefinition,
     // Path to the API docs
     // Note that this path is relative to the current directory from which the Node.js is ran, not the application itself.
-    apis: ["./src/entity/**/*.ts", "./src/routes/*.ts"],
+    apis: ["./src/entity/**/*.{js,ts}", "./src/routes/*.{js,ts}"],
 };
 
 const swaggerSpec = swaggerJsDoc(options);
