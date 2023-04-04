@@ -1,5 +1,5 @@
 import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn,} from 'typeorm';
-import {ITaskRequest} from '../../shared/interfaces';
+import {ICreateTaskRequest} from '../../shared/interfaces';
 import {Todo} from './Todo';
 
 /**
@@ -57,13 +57,11 @@ export class Task {
     @UpdateDateColumn()
     public updatedAt: Date;
 
-    constructor(taskRequest?: ITaskRequest) {
-        this.description =
-            taskRequest && taskRequest.description
-                ? taskRequest.description
-                : undefined;
-        this.status =
-            taskRequest && taskRequest.status ? taskRequest.status : false;
-        this.id = taskRequest && taskRequest.id ? taskRequest.id : undefined;
+    constructor(taskRequest?: ICreateTaskRequest) {
+        if (taskRequest) {
+            this.id = taskRequest.id;
+            this.description = taskRequest.description;
+            this.status = taskRequest.status !== undefined ? this.status : false;
+        }
     }
 }

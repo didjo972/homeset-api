@@ -20,10 +20,10 @@ export interface IResetPasswordRequest {
 
 export interface ICreateTodoRequest {
     name: string;
-    tasks?: ITaskRequest[];
+    tasks?: ICreateTaskRequest[];
 }
 
-export interface ITaskRequest {
+export interface ICreateTaskRequest {
     id?: number;
     description?: string;
     status?: boolean;
@@ -32,7 +32,7 @@ export interface ITaskRequest {
 export interface IUpdateTodoRequest {
     name?: string;
     status?: boolean;
-    tasks?: ITaskRequest[];
+    tasks?: ICreateTaskRequest[];
 }
 
 export interface IJwtPayload {

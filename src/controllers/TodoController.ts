@@ -41,6 +41,8 @@ class TodoController {
     };
 
     public static editTodo = async (req: Request, res: Response) => {
+        console.info('Edit Todo endpoint has been called with: ' + req.body.toString() + ' and path param ' + req.params.id);
+
         // Get values from the body
         const {name, status, tasks = []} = req.body as IUpdateTodoRequest;
 
@@ -58,28 +60,38 @@ class TodoController {
             return;
         }
 
+        console.info('A todo has been found: ' + todo.id);
+
         // Validate the new values on model
         if (name) {
             todo.name = name;
         }
 
-        if (status) {
+        if (status !== undefined) {
             todo.status = status;
         }
 
-        if (tasks) {
-            const updatedTasks = todo.tasks.map(task => {
-                const tskFound = tasks.find(tsk => tsk.id === task.id);
-                if (
-                    tskFound &&
-                    tskFound.description !== undefined &&
-                    tskFound.status !== undefined
-                ) {
-                    return new Task(tskFound);
+        if (tasks && tasks.length > 0) {
+            const updatedTasks = tasks.map(taskReq => {
+                if (taskReq.id) {
+                    const taskFound = todo.tasks.find(task => task.id === taskReq.id);
+                    if (taskFound) {
+                        if (taskReq.description) {
+                            taskFound.description = taskReq.description;
+                        }
+                        if (taskReq.status !== undefined) {
+                            taskFound.status = taskReq.status;
+                        }
+                        return taskFound;
+                    } else {
+                        console.error(`No task with id: ${taskReq.id} found.`);
+                    }
                 }
-                return task;
+                
+                if (taskReq.description) {
+                    return new Task(taskReq);
+                }
             });
-            console.log(updatedTasks);
             todo.tasks = updatedTasks;
         }
 
