@@ -9,19 +9,19 @@ import {Place} from './saveobject/Place';
 import {Task} from './todolist/Task';
 import {Todo} from './todolist/Todo';
 import {User} from './user/User';
-import {Group} from "./user/Group";
+import {Group} from './user/Group';
 
 export const entities = [
-    User,
-    Todo,
-    Task,
-    Item,
-    Place,
-    CookingRecipe,
-    Element,
-    Ingredient,
-    Act,
-    Servicing,
-    Vehicle,
-    Group,
+  User,
+  Todo,
+  Task,
+  Item,
+  Place,
+  CookingRecipe,
+  Element,
+  Ingredient,
+  Act,
+  Servicing,
+  Vehicle,
+  Group,
 ];

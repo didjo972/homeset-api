@@ -1,11 +1,11 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import {Act} from './Act';
 import {Vehicle} from './Vehicle';
@@ -46,23 +46,23 @@ import {Vehicle} from './Vehicle';
  */
 @Entity()
 export class Servicing {
-    @PrimaryGeneratedColumn()
-    public id: number;
+  @PrimaryGeneratedColumn()
+  public id: number;
 
-    @Column()
-    public kilometer: number;
+  @Column()
+  public kilometer: number;
 
-    @ManyToOne(() => Vehicle, vehicle => vehicle.servicings)
-    public vehicle: Vehicle;
+  @ManyToOne(() => Vehicle, vehicle => vehicle.servicings)
+  public vehicle: Vehicle;
 
-    @OneToMany(() => Act, act => act.servicing)
-    public acts: Act[];
+  @OneToMany(() => Act, act => act.servicing)
+  public acts: Act[];
 
-    @Column()
-    @CreateDateColumn()
-    public createdAt: Date;
+  @Column()
+  @CreateDateColumn()
+  public createdAt: Date;
 
-    @Column()
-    @UpdateDateColumn()
-    public updatedAt: Date;
+  @Column()
+  @UpdateDateColumn()
+  public updatedAt: Date;
 }

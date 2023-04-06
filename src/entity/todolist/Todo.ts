@@ -1,15 +1,9 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
-import {User} from '../user/User';
+import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
 import {Task} from './Task';
-import {Group} from "../user/Group";
+import AbstractBusiness from '../abstract/AbstractBusiness';
+import AbstractEntity from '../abstract/AbstractEntity';
+import {Group} from '../user/Group';
+import {User} from '../user/User';
 
 /**
  * @swagger
@@ -52,32 +46,22 @@ import {Group} from "../user/Group";
  *           description: The todo's update date
  */
 @Entity()
-export class Todo {
-    @PrimaryGeneratedColumn()
-    public id: number;
+export class Todo extends AbstractBusiness {
+  @Column()
+  public name: string;
 
-    @Column()
-    public name: string;
+  @Column()
+  public status: boolean;
 
-    @Column()
-    public status: boolean;
+  @OneToMany(() => Task, task => task.todo, {
+    cascade: true,
+  })
+  public tasks: Task[];
 
-    @OneToMany(() => Task, task => task.todo, {
-        cascade: true,
-    })
-    public tasks: Task[];
+  @ManyToOne(() => Group)
+  public group: Group;
 
-    @ManyToOne(() => User, owner => owner.todos)
-    public owner: User;
-
-    @ManyToOne(() => Group, group => group.todos)
-    public group: Group;
-
-    @Column()
-    @CreateDateColumn()
-    public createdAt: Date;
-
-    @Column()
-    @UpdateDateColumn()
-    public updatedAt: Date;
+  constructor() {
+    super();
+  }
 }

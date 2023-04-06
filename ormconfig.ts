@@ -12,7 +12,7 @@ export const ormconfig = (): ConnectionOptions => {
   logging: true,
   entities,
   migrations: [
-    "src/migration/**/.{ts,js}"
+    "src/migration/**!(abstract)/.{ts,js}"
   ],
   cli: {
     entitiesDir: "src/entity",

@@ -1,25 +1,13 @@
-import {Length} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
-  Entity,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
-@Unique(['name'])
-export class Place {
+abstract class AbstractEntity {
   @PrimaryGeneratedColumn()
   public id: number;
-
-  @Column()
-  @Length(4, 20)
-  public name: string;
-
-  @Column()
-  public description: string;
 
   @Column()
   @CreateDateColumn()
@@ -28,4 +16,12 @@ export class Place {
   @Column()
   @UpdateDateColumn()
   public updatedAt: Date;
+
+  constructor(id?: number) {
+    if (id) {
+      this.id = id;
+    }
+  }
 }
+
+export default AbstractEntity;

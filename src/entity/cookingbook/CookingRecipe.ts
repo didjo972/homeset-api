@@ -1,15 +1,7 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToMany,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-    Unique,
-    UpdateDateColumn,
-} from 'typeorm';
+import {Column, Entity, ManyToMany, ManyToOne, Unique} from 'typeorm';
 import {User} from '../user/User';
-import {Group} from "../user/Group";
+import {Group} from '../user/Group';
+import AbstractEntity from '../abstract/AbstractEntity';
 
 /**
  * @swagger
@@ -50,30 +42,23 @@ import {Group} from "../user/Group";
  */
 @Entity()
 @Unique(['name'])
-export class CookingRecipe {
-    @PrimaryGeneratedColumn()
-    public id: number;
+export class CookingRecipe extends AbstractEntity {
+  @Column()
+  public name: string;
 
-    @Column()
-    public name: string;
+  @Column()
+  public description: string;
 
-    @Column()
-    public description: string;
+  @Column()
+  public nbPerson: number;
 
-    @Column()
-    public nbPerson: number;
+  @ManyToOne(() => User, owner => owner.cookingRecipes)
+  public owner: User;
 
-    @ManyToOne(() => User, owner => owner.cookingRecipes)
-    public owner: User;
+  @ManyToMany(() => Group, group => group.cookingRecipes)
+  public groups: Group[];
 
-    @ManyToMany(() => Group, group => group.cookingRecipes)
-    public groups: Group[];
-
-    @Column()
-    @CreateDateColumn()
-    public createdAt: Date;
-
-    @Column()
-    @UpdateDateColumn()
-    public updatedAt: Date;
+  constructor(id?: number) {
+    super(id);
+  }
 }

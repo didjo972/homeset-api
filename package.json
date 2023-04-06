@@ -10,10 +10,10 @@
     "prod": "node ./dist/src/index.js",
     "test": "npm run build && jest --silent --watchAll --runInBand --config jest.config.js --detectOpenHandles",
     "test-coverage": "node_modules/.bin/jest --watchAll --runInBand --verbose --coverage",
-    "lint": "eslint -c .eslintrc.js --ext .ts src",
-    "lint:fix": "eslint -c .eslintrc.js --ext .ts src --fix",
+    "lint": "npx eslint -c .eslintrc.js --ext .ts src",
+    "lint:fix": "npx eslint -c .eslintrc.js --ext .ts src --fix",
     "prettier": "npx prettier src test --check",
-    "prettier:fix": "npm run prettier -- --write",
+    "prettier:fix": "npx prettier src test --check --write",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
     "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create -n"
   },

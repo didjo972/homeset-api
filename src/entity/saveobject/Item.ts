@@ -1,7 +1,9 @@
 import {Length} from 'class-validator';
-import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn,} from 'typeorm';
+import {Column, Entity, ManyToOne, Unique} from 'typeorm';
+import AbstractBusiness from '../abstract/AbstractBusiness';
+import AbstractEntity from '../abstract/AbstractEntity';
+import {Group} from '../user/Group';
 import {User} from '../user/User';
-import {Group} from "../user/Group";
 
 /**
  * @swagger
@@ -40,28 +42,18 @@ import {Group} from "../user/Group";
  */
 @Entity()
 @Unique(['name'])
-export class Item {
-    @PrimaryGeneratedColumn()
-    public id: number;
+export class Item extends AbstractBusiness {
+  @Column()
+  @Length(4, 20)
+  public name: string;
 
-    @Column()
-    @Length(4, 20)
-    public name: string;
+  @Column()
+  public description: string;
 
-    @Column()
-    public description: string;
+  @ManyToOne(() => Group)
+  public group: Group;
 
-    @ManyToOne(() => User, owner => owner.items)
-    public owner: User;
-
-    @ManyToOne(() => Group, group => group.items)
-    public group: Group;
-
-    @Column()
-    @CreateDateColumn()
-    public createdAt: Date;
-
-    @Column()
-    @UpdateDateColumn()
-    public updatedAt: Date;
+  constructor() {
+    super();
+  }
 }

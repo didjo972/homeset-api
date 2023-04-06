@@ -1,15 +1,18 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity, ManyToMany,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import {User} from "./User";
-import {CookingRecipe} from "../cookingbook/CookingRecipe";
-import {Todo} from "../todolist/Todo";
-import {Item} from "../saveobject/Item";
+import {User} from './User';
+import {CookingRecipe} from '../cookingbook/CookingRecipe';
+import {Todo} from '../todolist/Todo';
+import {Item} from '../saveobject/Item';
+import AbstractEntity from '../abstract/AbstractEntity';
+import {Vehicle} from '../garage/Vehicle';
 
 /**
  * @swagger
@@ -59,30 +62,26 @@ import {Item} from "../saveobject/Item";
  *           description: The group's update date
  */
 @Entity()
-export class Group {
-    @PrimaryGeneratedColumn()
-    public id: number;
+export class Group extends AbstractEntity {
+  @Column()
+  public name: string;
 
-    @Column()
-    public name: string;
+  @ManyToMany(() => User, user => user.groups)
+  public users: User[];
 
-    @ManyToMany(() => User, user => user.groups)
-    public users: User[];
+  @ManyToMany(() => CookingRecipe, cookingRecipe => cookingRecipe.groups)
+  public cookingRecipes: CookingRecipe[];
 
-    @ManyToMany(() => CookingRecipe, cookingRecipe => cookingRecipe.groups)
-    public cookingRecipes: CookingRecipe[];
+  @OneToMany(() => Todo, todo => todo.group)
+  public todos: Todo[];
 
-    @OneToMany(() => Todo, todo => todo.group)
-    public todos: Todo[];
+  @OneToMany(() => Item, item => item.group)
+  public items: Item[];
 
-    @OneToMany(() => Item, item => item.group)
-    public items: Item[];
+  @OneToMany(() => Vehicle, vehicle => vehicle.group)
+  public vehicles: Vehicle[];
 
-    @Column()
-    @CreateDateColumn()
-    public createdAt: Date;
-
-    @Column()
-    @UpdateDateColumn()
-    public updatedAt: Date;
+  constructor(id?: number) {
+    super(id);
+  }
 }

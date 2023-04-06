@@ -31,7 +31,11 @@ const router = Router();
  *                      $ref: "#/components/schemas/User"
  */
 // Get all users
-router.get('/', [checkJwt, checkRole(['ADMIN'])], UserController.listAll as RequestHandler);
+router.get(
+  '/',
+  [checkJwt, checkRole(['ADMIN'])],
+  UserController.listAll as RequestHandler,
+);
 
 /**
  * @swagger
@@ -61,7 +65,11 @@ router.get('/', [checkJwt, checkRole(['ADMIN'])], UserController.listAll as Requ
  *          description: User not found.
  */
 // Get one user
-router.get('/:id([0-9]+)', [checkJwt], UserController.getOneById as RequestHandler);
+router.get(
+  '/:id([0-9]+)',
+  [checkJwt],
+  UserController.getOneById as RequestHandler,
+);
 
 /**
  * @swagger
@@ -93,9 +101,9 @@ router.get('/:id([0-9]+)', [checkJwt], UserController.getOneById as RequestHandl
  */
 // Edit one user
 router.patch(
-    '/:id([0-9]+)',
-    [checkJwt, checkRole(['ADMIN'])],
-    UserController.editUser as RequestHandler
+  '/:id([0-9]+)',
+  [checkJwt, checkRole(['ADMIN'])],
+  UserController.editUser as RequestHandler,
 );
 
 /**
@@ -122,9 +130,9 @@ router.patch(
  */
 // Delete one user
 router.delete(
-    '/:id([0-9]+)',
-    [checkJwt, checkRole(['ADMIN'])],
-    UserController.deleteUser as RequestHandler
+  '/:id([0-9]+)',
+  [checkJwt, checkRole(['ADMIN'])],
+  UserController.deleteUser as RequestHandler,
 );
 
 export default router;

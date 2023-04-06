@@ -1,14 +1,8 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
-import {User} from '../user/User';
+import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
 import {Servicing} from './Servicing';
+import AbstractBusiness from '../abstract/AbstractBusiness';
+import {Group} from '../user/Group';
+import {User} from '../user/User';
 
 /**
  * @swagger
@@ -53,30 +47,19 @@ import {Servicing} from './Servicing';
  *           description: The vehicle's update date
  */
 @Entity()
-export class Vehicle {
-    @PrimaryGeneratedColumn()
-    public id: number;
+export class Vehicle extends AbstractBusiness {
+  @Column()
+  public brand: string;
 
-    @Column()
-    public brand: string;
+  @Column()
+  public model: string;
 
-    @Column()
-    public model: string;
+  @Column()
+  public identification: string;
 
-    @Column()
-    public identification: string;
+  @OneToMany(() => Servicing, servicing => servicing.vehicle)
+  public servicings: Servicing[];
 
-    @OneToMany(() => Servicing, servicing => servicing.vehicle)
-    public servicings: Servicing[];
-
-    @ManyToOne(() => User, owner => owner.vehicles)
-    public owner: User;
-
-    @Column()
-    @CreateDateColumn()
-    public createdAt: Date;
-
-    @Column()
-    @UpdateDateColumn()
-    public updatedAt: Date;
+  @ManyToOne(() => Group)
+  public group: Group;
 }

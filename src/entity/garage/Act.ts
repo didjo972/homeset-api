@@ -1,4 +1,11 @@
-import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import {Servicing} from './Servicing';
 
 /**
@@ -32,20 +39,20 @@ import {Servicing} from './Servicing';
  */
 @Entity()
 export class Act {
-    @PrimaryGeneratedColumn()
-    public id: number;
+  @PrimaryGeneratedColumn()
+  public id: number;
 
-    @Column()
-    public description: string;
+  @Column()
+  public description: string;
 
-    @ManyToOne(() => Servicing, servicing => servicing.acts)
-    public servicing: Servicing;
+  @ManyToOne(() => Servicing, servicing => servicing.acts)
+  public servicing: Servicing;
 
-    @Column()
-    @CreateDateColumn()
-    public createdAt: Date;
+  @Column()
+  @CreateDateColumn()
+  public createdAt: Date;
 
-    @Column()
-    @UpdateDateColumn()
-    public updatedAt: Date;
+  @Column()
+  @UpdateDateColumn()
+  public updatedAt: Date;
 }

@@ -15,25 +15,36 @@ const router = Router();
  * path:
  * /todos:
  *    post:
- *      summary: Create a new todo
+ *      summary: Create or Edit a todo
  *      tags: [Todos]
+ *      security:
+ *        - jwt: []
  *      requestBody:
- *          required: true
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Todo'
+ *      responses:
+ *        "200":
+ *          description: Create or Update was successful
  *          content:
  *              application/json:
  *                  schema:
  *                      $ref: "#/components/schemas/Todo"
- *
- *      responses:
  *        "201":
  *          description: The created todo
  *          content:
  *              application/json:
  *                  schema:
  *                      $ref: "#/components/schemas/Todo"
+ *        "400":
+ *          description: Incorrect data format.
+ *        "401":
+ *          description: User not authenticated.
  */
-// Create a todo
-router.post('/', [checkJwt], TodoController.newTodo as RequestHandler);
+// Create or Update todo
+router.post('/', [checkJwt], TodoController.upsertTodo as RequestHandler);
 
 /**
  * @swagger
@@ -82,7 +93,11 @@ router.get('/', [checkJwt], TodoController.listAll as RequestHandler);
  *          description: Todo not found.
  */
 // Get one todo
-router.get('/:id([0-9]+)', [checkJwt], TodoController.getOneById as RequestHandler);
+router.get(
+  '/:id([0-9]+)',
+  [checkJwt],
+  TodoController.getOneById as RequestHandler,
+);
 
 /**
  * @swagger
@@ -113,7 +128,11 @@ router.get('/:id([0-9]+)', [checkJwt], TodoController.getOneById as RequestHandl
  *          description: Todo not found.
  */
 // Edit one todo
-router.patch('/:id([0-9]+)', [checkJwt], TodoController.editTodo as RequestHandler);
+router.patch(
+  '/:id([0-9]+)',
+  [checkJwt],
+  TodoController.editTodo as RequestHandler,
+);
 
 /**
  * @swagger
@@ -138,6 +157,10 @@ router.patch('/:id([0-9]+)', [checkJwt], TodoController.editTodo as RequestHandl
  *          description: Todo not found.
  */
 // Delete one todo
-router.delete('/:id([0-9]+)', [checkJwt], TodoController.deleteTodo as RequestHandler);
+router.delete(
+  '/:id([0-9]+)',
+  [checkJwt],
+  TodoController.deleteTodo as RequestHandler,
+);
 
 export default router;

@@ -1,6 +1,8 @@
-import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn,} from 'typeorm';
-import {ICreateTaskRequest} from '../../shared/interfaces';
+import {Column, Entity, ManyToOne} from 'typeorm';
+import {ICreateTaskRequest} from '../../shared/api-request-interfaces';
 import {Todo} from './Todo';
+import AbstractEntity from '../abstract/AbstractEntity';
+import {User} from '../user/User';
 
 /**
  * @swagger
@@ -36,32 +38,27 @@ import {Todo} from './Todo';
  *           description: The task's update date
  */
 @Entity()
-export class Task {
-    @PrimaryGeneratedColumn()
-    public id: number;
+export class Task extends AbstractEntity {
+  @Column()
+  public description: string;
 
-    @Column()
-    public description: string;
+  @Column()
+  public status: boolean;
 
-    @Column()
-    public status: boolean;
+  @ManyToOne(() => Todo, todo => todo.tasks)
+  public todo: Todo;
 
-    @ManyToOne(() => Todo, todo => todo.tasks)
-    public todo: Todo;
+  @ManyToOne(() => User, owner => owner.todos, {eager: true})
+  public owner: User;
 
-    @Column()
-    @CreateDateColumn()
-    public createdAt: Date;
-
-    @Column()
-    @UpdateDateColumn()
-    public updatedAt: Date;
-
-    constructor(taskRequest?: ICreateTaskRequest) {
-        if (taskRequest) {
-            this.id = taskRequest.id;
-            this.description = taskRequest.description;
-            this.status = taskRequest.status !== undefined ? this.status : false;
-        }
+  constructor(taskRequest?: ICreateTaskRequest) {
+    if (taskRequest) {
+      super(taskRequest.id);
+      this.description = taskRequest.description;
+      this.status =
+        taskRequest.status !== undefined ? taskRequest.status : false;
+    } else {
+      super();
     }
+  }
 }

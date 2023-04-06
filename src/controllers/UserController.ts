@@ -2,7 +2,8 @@ import {validate} from 'class-validator';
 import {Request, Response} from 'express';
 import {getRepository} from 'typeorm';
 import {User} from '../entity/user/User';
-import {IEditUserRequest} from "../shared/interfaces";
+import {IEditUserRequest} from '../shared/api-request-interfaces';
+import {toUserResponse} from '../transformers/transformers';
 
 class UserController {
   public static listAll = async (req: Request, res: Response) => {
@@ -13,91 +14,91 @@ class UserController {
     });
 
     // Send the users object
-    res.send(users);
+    res.send(users.map(user => toUserResponse(user)));
   };
 
-    public static getOneById = async (req: Request, res: Response) => {
-        // Get the ID from the url
-        const id: number = +req.params.id;
+  public static getOneById = async (req: Request, res: Response) => {
+    // Get the ID from the url
+    const id: number = +req.params.id;
 
-        // Get the user from database
-        const userRepository = getRepository(User);
-        try {
-            const user = await userRepository.findOneOrFail(id, {
-                select: ['id', 'username', 'role', 'phone'], // We dont want to send the password on response
-            });
-            res.send(user);
-        } catch (error) {
-            console.error(error);
-            res.status(404).send('User not found');
-        }
-    };
+    // Get the user from database
+    const userRepository = getRepository(User);
+    try {
+      const user = await userRepository.findOneOrFail(id, {
+        select: ['id', 'username', 'role', 'phone'], // We dont want to send the password on response
+      });
+      res.send(user);
+    } catch (error) {
+      console.error(error);
+      res.status(404).send('User not found');
+    }
+  };
 
-    public static editUser = async (req: Request, res: Response) => {
-        // Get the ID from the url
-        const id = req.params.id;
+  public static editUser = async (req: Request, res: Response) => {
+    // Get the ID from the url
+    const id = req.params.id;
 
-        // Get values from the body
-        const {username, role, phone} = req.body as IEditUserRequest;
+    // Get values from the body
+    const {username, role, phone} = req.body as IEditUserRequest;
 
-        // Try to find user on database
-        const userRepository = getRepository(User);
-        let user;
-        try {
-            user = await userRepository.findOneOrFail(id);
-        } catch (error) {
-            console.error(error);
-            // If not found, send a 404 response
-            res.status(404).send('User not found');
-            return;
-        }
+    // Try to find user on database
+    const userRepository = getRepository(User);
+    let user;
+    try {
+      user = await userRepository.findOneOrFail(id);
+    } catch (error) {
+      console.error(error);
+      // If not found, send a 404 response
+      res.status(404).send('User not found');
+      return;
+    }
 
-        // Validate the new values on model
-        if (phone) {
-            user.phone = phone;
-        }
+    // Validate the new values on model
+    if (phone) {
+      user.phone = phone;
+    }
 
-        if (username) {
-            user.username = username;
-        }
+    if (username) {
+      user.username = username;
+    }
 
-        if (role) {
-            user.role = role;
-        }
-        const errors = await validate(user);
-        if (errors.length > 0) {
-            res.status(400).send(errors);
-            return;
-        }
+    if (role) {
+      user.role = role;
+    }
+    const errors = await validate(user);
+    if (errors.length > 0) {
+      res.status(400).send(errors);
+      return;
+    }
 
-        // Try to safe, if fails, that means username already in use
-        try {
-            await userRepository.save(user);
-        } catch (e) {
-            res.status(409).send('username already in use');
-            return;
-        }
-        // After all send a 204 (no content, but accepted) response
-        res.status(204).send();
-    };
+    // Try to safe, if fails, that means username already in use
+    try {
+      await userRepository.save(user);
+    } catch (e) {
+      res.status(409).send('username already in use');
+      return;
+    }
+    // After all send a 204 (no content, but accepted) response
+    res.status(204).send();
+  };
 
-    public static deleteUser = async (req: Request, res: Response) => {
-        // Get the ID from the url
-        const id = req.params.id;
+  public static deleteUser = async (req: Request, res: Response) => {
+    // Get the ID from the url
+    const id = req.params.id;
 
-        const userRepository = getRepository(User);
-        let user: User;
-        try {
-            user = await userRepository.findOneOrFail(id);
-        } catch (error) {
-            res.status(404).send('User not found');
-            return;
-        }
-        await userRepository.delete(user.id);
+    const userRepository = getRepository(User);
+    let user: User;
+    try {
+      user = await userRepository.findOneOrFail(id);
+    } catch (error) {
+      res.status(404).send('User not found');
+      return;
+    }
+    await userRepository.delete(user.id);
 
-        // After all send a 204 (no content, but accepted) response
-        res.status(204).send();
-    };
+    // After all send a 204 (no content, but accepted) response
+    res.status(204).send();
+  };
 }
 
 export default UserController;
