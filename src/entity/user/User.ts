@@ -120,6 +120,9 @@ export class User extends AbstractEntity {
   @ManyToMany(() => Group, group => group.users)
   public groups: Group[];
 
+  @OneToMany(() => Group, group => group.owner)
+  public groupAdmins: Group[];
+
   constructor(id?: number) {
     super(id);
   }

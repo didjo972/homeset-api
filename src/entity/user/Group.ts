@@ -2,7 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -66,7 +68,11 @@ export class Group extends AbstractEntity {
   @Column()
   public name: string;
 
-  @ManyToMany(() => User, user => user.groups)
+  @ManyToOne(() => User, user => user.groupAdmins, {eager: true})
+  public owner: User;
+
+  @ManyToMany(() => User, user => user.groups, {eager: true})
+  @JoinTable()
   public users: User[];
 
   @ManyToMany(() => CookingRecipe, cookingRecipe => cookingRecipe.groups)

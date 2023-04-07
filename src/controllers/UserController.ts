@@ -14,7 +14,7 @@ class UserController {
     });
 
     // Send the users object
-    res.send(users.map(user => toUserResponse(user)));
+    res.status(200).send(users.map(user => toUserResponse(user)));
   };
 
   public static getOneById = async (req: Request, res: Response) => {

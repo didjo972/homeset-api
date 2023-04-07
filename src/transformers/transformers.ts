@@ -15,7 +15,6 @@ export const toUserResponse = (user: User, withDate = false): IUserResponse => {
     email: user.email,
     username: user.username,
     phone: user.phone,
-    role: user.role,
   };
   if (withDate) {
     userReponse.createdAt = user.createdAt;
@@ -45,6 +44,10 @@ export const toGroupResponse = (group: Group): IGroupResponse => {
     name: group.name,
     createdAt: group.createdAt,
     updatedAt: group.updatedAt,
+    admin: toUserResponse(group.owner),
+    users: group.users
+      ? group.users.map(user => toUserResponse(user))
+      : undefined,
   };
 };
 

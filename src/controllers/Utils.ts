@@ -28,7 +28,7 @@ class Utils {
     businessEntity: T | any,
   ) => {
     return (
-      businessEntity.owner.id !== connectedUser.id ||
+      businessEntity.owner.id === connectedUser.id ||
       (businessEntity.group &&
         businessEntity.group.users &&
         !!businessEntity.group.users.find(

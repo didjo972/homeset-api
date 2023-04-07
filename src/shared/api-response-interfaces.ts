@@ -10,7 +10,6 @@ export interface IUserResponse {
   id: number;
   email: string;
   username: string;
-  role: string;
   phone: string;
   todos?: ITodoResponse[];
   groups?: IGroupResponse[];
@@ -22,6 +21,7 @@ export interface IGroupResponse {
   id: number;
   name: string;
   users?: IUserResponse[];
+  admin: IUserResponse;
   createdAt: Date;
   updatedAt: Date;
 }

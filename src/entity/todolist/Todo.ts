@@ -58,7 +58,7 @@ export class Todo extends AbstractBusiness {
   })
   public tasks: Task[];
 
-  @ManyToOne(() => Group)
+  @ManyToOne(() => Group, group => group.todos)
   public group: Group;
 
   constructor() {

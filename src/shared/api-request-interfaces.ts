@@ -42,3 +42,23 @@ export interface IEditUserRequest {
   role?: string;
   phone?: string;
 }
+
+export interface IUpsertUserRequest {
+  idMember: number;
+}
+
+export interface IUpsertGroupRequest {
+  id?: number;
+  name: string;
+  users: IUpsertUserRequest[];
+}
+
+export interface IUserRequest {
+  id: number;
+}
+
+export interface IUpdateGroupRequest {
+  name?: string;
+  users?: IUserRequest[];
+  owner?: IUserRequest;
+}

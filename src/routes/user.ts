@@ -33,7 +33,7 @@ const router = Router();
 // Get all users
 router.get(
   '/',
-  [checkJwt, checkRole(['ADMIN'])],
+  [checkJwt, checkRole(['USER'])],
   UserController.listAll as RequestHandler,
 );
 
