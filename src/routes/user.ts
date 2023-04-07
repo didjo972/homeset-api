@@ -37,6 +37,8 @@ router.get(
   UserController.listAll as RequestHandler,
 );
 
+router.get('/search', [checkJwt], UserController.findsByUsername as RequestHandler)
+
 /**
  * @swagger
  * path:
