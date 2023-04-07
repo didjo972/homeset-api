@@ -44,7 +44,7 @@ export const toGroupResponse = (group: Group): IGroupResponse => {
     name: group.name,
     createdAt: group.createdAt,
     updatedAt: group.updatedAt,
-    admin: toUserResponse(group.owner),
+    admin: group.owner ? toUserResponse(group.owner) : undefined,
     users: group.users
       ? group.users.map(user => toUserResponse(user))
       : undefined,

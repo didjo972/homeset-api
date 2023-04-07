@@ -25,6 +25,7 @@ class TodoRepository extends BaseRepository<Todo> {
         'owner.id',
         'owner.email',
         'owner.username',
+        'group.id',
         'group.name',
       ])
       .where('todo.id = :id', {id})
@@ -35,6 +36,8 @@ class TodoRepository extends BaseRepository<Todo> {
     return this.createQueryBuilder('todo')
       .leftJoinAndSelect('todo.tasks', 'task')
       .leftJoinAndSelect('todo.owner', 'owner')
+      .leftJoinAndSelect('todo.group', 'group')
+      .leftJoin('group.users', 'users')
       .select([
         'todo.id',
         'todo.name',
@@ -47,8 +50,11 @@ class TodoRepository extends BaseRepository<Todo> {
         'owner.id',
         'owner.email',
         'owner.username',
+        'group.id',
+        'group.name',
       ])
       .where('owner.id = :id', {id})
+      .orWhere('users.id = :id', {id})
       .getMany();
   }
 }
