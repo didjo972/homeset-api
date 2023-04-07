@@ -10,6 +10,7 @@ import {
   IUpsertTodoRequest,
 } from '../shared/api-request-interfaces';
 import {toTodoResponse} from '../transformers/transformers';
+import GroupRepository from '../repositories/GroupRepository';
 
 class TodoController {
   public static upsertTodo = async (req: Request, res: Response) => {
@@ -29,13 +30,13 @@ class TodoController {
     }
 
     // Get parameters from the body
-    const {id, name, status, tasks = []} = req.body as IUpsertTodoRequest;
+    const {id, name, status, group, tasks = []} = req.body as IUpsertTodoRequest;
 
     if (id) {
       // Get the todos from database
       const todoRepository = new TodoRepository();
       let todoToUpdate: Todo;
-      todoToUpdate = await todoRepository.findOne(id);
+      todoToUpdate = await todoRepository.getOneById(id);
 
       if (todoToUpdate) {
         console.info('A todo has been found: ' + todoToUpdate.id);
@@ -55,6 +56,22 @@ class TodoController {
         if (status !== undefined) {
           todoToUpdate.status = status;
         }
+
+        if (group === undefined || group <= 0) {
+          todoToUpdate.group = undefined;
+        } else {
+          let groupFound = undefined;
+            const groupRepository = new GroupRepository();
+            try {
+              groupFound = await groupRepository.getOneById(group);
+            } catch (error) {
+              console.error(error);
+              res.status(404).send('Group not found');
+              return;
+            }
+            todoToUpdate.group = groupFound;
+        }
+        
 
         if (tasks && tasks.length > 0) {
           const updatedTasks = tasks.map(taskReq => {
@@ -299,7 +316,7 @@ class TodoController {
       return;
     }
 
-    // Check if the user can edit this todo
+    // Check if the user can delete this todo
     if (!Utils.hasGrantAccess<Todo>(connectedUser, todoFound)) {
       console.error('The connected user has no grant access on this todo.');
       res.status(403).send();

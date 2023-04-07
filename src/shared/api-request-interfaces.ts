@@ -22,6 +22,7 @@ export interface IUpsertTodoRequest {
   id?: number;
   name: string;
   status?: boolean;
+  group: number;
   tasks?: ICreateTaskRequest[];
 }
 
