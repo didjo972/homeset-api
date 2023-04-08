@@ -55,6 +55,8 @@ class TodoRepository extends BaseRepository<Todo> {
       ])
       .where('owner.id = :id', {id})
       .orWhere('users.id = :id', {id})
+      .orderBy("todo.updatedAt", "DESC")
+      .addOrderBy("task.status", "ASC")
       .getMany();
   }
 }
