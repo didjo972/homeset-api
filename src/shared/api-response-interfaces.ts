@@ -21,9 +21,9 @@ export interface IGroupResponse {
   id: number;
   name: string;
   users?: IUserResponse[];
-  admin: IUserResponse;
-  createdAt: Date;
-  updatedAt: Date;
+  admin?: IUserResponse;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface ITodoResponse {

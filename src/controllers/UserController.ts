@@ -7,8 +7,7 @@ import {toUserResponse} from '../transformers/transformers';
 
 class UserController {
   public static listAll = async (req: Request, res: Response) => {
-    console.info(
-      'Get all Users endpoint has been called with');
+    console.info('Get all Users endpoint has been called with');
 
     // Get users from database
     const userRepository = getRepository(User);
@@ -51,7 +50,7 @@ class UserController {
     );
 
     // Get the username from the url
-    const search = req.query['username'] as string;
+    const search = req.query.username as string;
 
     if (!search && search.length < 3) {
       res.status(400).send('The search is incorrect');
@@ -61,7 +60,10 @@ class UserController {
     // Get the user from database
     const userRepository = getRepository(User);
     try {
-      const users = await userRepository.find({where: {username: Like(`%${search}%`)}, select: ['id', 'username', 'role', 'phone']})
+      const users = await userRepository.find({
+        where: {username: Like(`%${search}%`)},
+        select: ['id', 'username', 'role', 'phone'],
+      });
       res.send(users);
     } catch (error) {
       console.error(error);

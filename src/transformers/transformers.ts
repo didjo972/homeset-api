@@ -25,20 +25,29 @@ export const toUserResponse = (user: User, withDate = false): IUserResponse => {
 };
 
 export const toTaskResponse = (task: Task, withDate = false): ITaskResponse => {
-  const toTaskResponse: ITaskResponse = {
+  const taskResponse: ITaskResponse = {
     id: task.id,
     description: task.description,
     status: task.status,
   };
   if (withDate) {
-    toTaskResponse.createdAt = task.createdAt;
-    toTaskResponse.updatedAt = task.updatedAt;
+    taskResponse.createdAt = task.createdAt;
+    taskResponse.updatedAt = task.updatedAt;
   }
 
-  return toTaskResponse;
+  return taskResponse;
 };
 
-export const toGroupResponse = (group: Group): IGroupResponse => {
+export const toGroupResponse = (
+  group: Group,
+  partial = false,
+): IGroupResponse => {
+  if (partial) {
+    return {
+      id: group.id,
+      name: group.name,
+    };
+  }
   return {
     id: group.id,
     name: group.name,
@@ -62,6 +71,6 @@ export const toTodoResponse = (todo: Todo): ITodoResponse => {
     tasks: todo.tasks
       ? todo.tasks.map(task => toTaskResponse(task))
       : undefined,
-    group: todo.group ? toGroupResponse(todo.group) : undefined,
+    group: todo.group ? toGroupResponse(todo.group, true) : undefined,
   };
 };

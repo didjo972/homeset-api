@@ -1,9 +1,7 @@
 import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
 import {Task} from './Task';
 import AbstractBusiness from '../abstract/AbstractBusiness';
-import AbstractEntity from '../abstract/AbstractEntity';
 import {Group} from '../user/Group';
-import {User} from '../user/User';
 
 /**
  * @swagger
@@ -58,7 +56,7 @@ export class Todo extends AbstractBusiness {
   })
   public tasks: Task[];
 
-  @ManyToOne(() => Group, group => group.todos)
+  @ManyToOne(() => Group, group => group.todos, {nullable: true})
   public group: Group;
 
   constructor() {

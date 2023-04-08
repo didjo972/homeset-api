@@ -2,7 +2,6 @@ import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
 import {Servicing} from './Servicing';
 import AbstractBusiness from '../abstract/AbstractBusiness';
 import {Group} from '../user/Group';
-import {User} from '../user/User';
 
 /**
  * @swagger

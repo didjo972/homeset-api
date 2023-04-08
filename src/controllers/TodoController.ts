@@ -30,7 +30,13 @@ class TodoController {
     }
 
     // Get parameters from the body
-    const {id, name, status, group, tasks = []} = req.body as IUpsertTodoRequest;
+    const {
+      id,
+      name,
+      status,
+      group,
+      tasks = [],
+    } = req.body as IUpsertTodoRequest;
 
     if (id) {
       // Get the todos from database
@@ -57,21 +63,20 @@ class TodoController {
           todoToUpdate.status = status;
         }
 
-        if (group === undefined || group <= 0) {
-          todoToUpdate.group = undefined;
+        if (group === null || group <= 0) {
+          todoToUpdate.group = null;
         } else {
-          let groupFound = undefined;
-            const groupRepository = new GroupRepository();
-            try {
-              groupFound = await groupRepository.getOneById(group);
-            } catch (error) {
-              console.error(error);
-              res.status(404).send('Group not found');
-              return;
-            }
-            todoToUpdate.group = groupFound;
+          let groupFound = null;
+          const groupRepository = new GroupRepository();
+          try {
+            groupFound = await groupRepository.getOneById(group);
+          } catch (error) {
+            console.error(error);
+            res.status(404).send('Group not found');
+            return;
+          }
+          todoToUpdate.group = groupFound;
         }
-        
 
         if (tasks && tasks.length > 0) {
           const updatedTasks = tasks.map(taskReq => {
@@ -104,6 +109,7 @@ class TodoController {
           res.status(400).send(errors);
           return;
         }
+
         await todoRepository.save(todoToUpdate);
         res.status(200).send(toTodoResponse(todoToUpdate));
         return;

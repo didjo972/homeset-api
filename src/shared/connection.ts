@@ -4,7 +4,6 @@ import {User} from '../entity/user/User';
 
 const connection = {
   create: () => {
-    console.log(process.env);
     createConnection(ormconfig()).catch(e => console.error(e));
   },
 

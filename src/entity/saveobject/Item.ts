@@ -1,9 +1,7 @@
 import {Length} from 'class-validator';
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import AbstractBusiness from '../abstract/AbstractBusiness';
-import AbstractEntity from '../abstract/AbstractEntity';
 import {Group} from '../user/Group';
-import {User} from '../user/User';
 
 /**
  * @swagger
