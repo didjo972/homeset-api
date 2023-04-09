@@ -3,6 +3,7 @@ import {getRepository} from 'typeorm';
 import {User} from '../entity/user/User';
 import {IJwtPayload} from '../shared/interfaces';
 import AbstractBusiness from '../entity/abstract/AbstractBusiness';
+import { Group } from '../entity/user/Group';
 
 class Utils {
   public static getUserConnected = async (res: Response): Promise<User> => {
@@ -26,7 +27,12 @@ class Utils {
   public static hasGrantAccess = <T extends AbstractBusiness>(
     connectedUser: User,
     businessEntity: T | any,
-  ) => {
+  ): boolean => {
+    if (businessEntity instanceof Group) {
+      return businessEntity.owner.id === connectedUser.id || !!businessEntity.users.find(
+        (user: User) => user.id === connectedUser.id,
+      );
+    }
     return (
       businessEntity.owner.id === connectedUser.id ||
       (businessEntity.group &&

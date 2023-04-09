@@ -12,7 +12,7 @@ class GroupRepository extends BaseRepository<Group> {
     return this.createQueryBuilder('group')
       .leftJoinAndSelect('group.owner', 'owner')
       .leftJoinAndSelect('group.users', 'users')
-      .select(['group.id', 'group.name', 'owner.id', 'users.id'])
+      .select(['group.id', 'group.name', 'owner.id', 'owner.username', 'users.id', 'users.username'])
       .where('group.id = :id', {id})
       .getOneOrFail();
   }
@@ -21,6 +21,7 @@ class GroupRepository extends BaseRepository<Group> {
     return this.createQueryBuilder('group')
       .leftJoinAndSelect('group.owner', 'owner')
       .leftJoinAndSelect('group.users', 'users')
+      .leftJoin('group.users', 'user')
       .select([
         'group.id',
         'group.name',
@@ -32,7 +33,7 @@ class GroupRepository extends BaseRepository<Group> {
         'users.username',
       ])
       .where('owner.id = :id', {id})
-      .orWhere('users.id = :id', {id})
+      .orWhere('user.id = :id', {id})
       .getMany();
   }
 }

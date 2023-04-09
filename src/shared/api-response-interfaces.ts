@@ -21,7 +21,7 @@ export interface IGroupResponse {
   id: number;
   name: string;
   users?: IUserResponse[];
-  admin?: IUserResponse;
+  owner?: IUserResponse;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -29,7 +29,7 @@ class GroupController {
     }
 
     // Get parameters from the body
-    const {id, name, users = []} = req.body as IUpsertGroupRequest;
+    const {id, name} = req.body as IUpsertGroupRequest;
 
     if (id) {
       // Get the groups from database
@@ -68,6 +68,7 @@ class GroupController {
     const groupToCreate = new Group();
     groupToCreate.name = name;
     groupToCreate.owner = connectedUser;
+    groupToCreate.users = [connectedUser];
 
     // Validade if the parameters are ok
     const errors = await validate(groupToCreate);
@@ -197,7 +198,7 @@ class GroupController {
     const groups = await groupRepository.findAll(connectedUser.id);
 
     // Send the groups object
-    res.send(groups.map(toGroupResponse));
+    res.send(groups.map((group) => toGroupResponse(group)));
   };
 
   public static getOneById = async (req: Request, res: Response) => {
@@ -237,7 +238,6 @@ class GroupController {
       res.status(403).send();
       return;
     }
-
     res.send(toGroupResponse(groupFound));
     return;
   };

@@ -53,7 +53,7 @@ export const toGroupResponse = (
     name: group.name,
     createdAt: group.createdAt,
     updatedAt: group.updatedAt,
-    admin: group.owner ? toUserResponse(group.owner) : undefined,
+    owner: group.owner ? toUserResponse(group.owner) : undefined,
     users: group.users
       ? group.users.map(user => toUserResponse(user))
       : undefined,

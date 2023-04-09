@@ -51,7 +51,6 @@ export interface IUpsertUserRequest {
 export interface IUpsertGroupRequest {
   id?: number;
   name: string;
-  users: IUpsertUserRequest[];
 }
 
 export interface IUserRequest {
