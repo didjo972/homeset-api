@@ -27,23 +27,21 @@ class Utils {
   public static hasGrantAccess = <T extends AbstractBusiness>(
     connectedUser: User,
     businessEntity: T | any,
+    deleteAction: boolean = false,
   ): boolean => {
-    if (businessEntity instanceof Group) {
-      return (
-        businessEntity.owner.id === connectedUser.id ||
-        !!businessEntity.users.find(
-          (user: User) => user.id === connectedUser.id,
-        )
+    if (deleteAction || businessEntity.owner.id === connectedUser.id) {
+      return businessEntity.owner.id === connectedUser.id;
+    } else if (businessEntity instanceof Group) {
+      return !!businessEntity.users.find(
+        (user: User) => user.id === connectedUser.id,
       );
-    }
-    return (
-      businessEntity.owner.id === connectedUser.id ||
-      (businessEntity.group &&
+    } else {
+      businessEntity.group &&
         businessEntity.group.users &&
         !!businessEntity.group.users.find(
           (user: User) => user.id === connectedUser.id,
-        ))
-    );
+        );
+    }
   };
 }
 

@@ -32,7 +32,7 @@ export interface ITodoResponse {
   status: boolean;
   tasks: ITaskResponse[];
   owner: IUserResponse;
-  group: IGroupResponse;
+  group: IGroupResponse | number;
   createdAt: Date;
   updatedAt: Date;
 }

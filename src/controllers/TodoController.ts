@@ -37,13 +37,7 @@ class TodoController {
       }
 
       // Get parameters from the body
-      const {
-        id,
-        name,
-        status,
-        group,
-        tasks = [],
-      } = req.body as IUpsertTodoRequest;
+      const {id, name, group, tasks = []} = req.body as IUpsertTodoRequest;
 
       if (id) {
         // Get the todos from database
@@ -68,9 +62,9 @@ class TodoController {
             todoToUpdate.name = name;
           }
 
-          if (status !== undefined) {
-            todoToUpdate.status = status;
-          }
+          // if (status !== undefined) {
+          //   todoToUpdate.status = status;
+          // }
 
           if (group === null || group <= 0) {
             todoToUpdate.group = null;
@@ -180,7 +174,7 @@ class TodoController {
       }
 
       // Get values from the body
-      const {name, status, tasks = []} = req.body as IUpdateTodoRequest;
+      const {name, tasks = [], group} = req.body as IUpdateTodoRequest;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -206,12 +200,25 @@ class TodoController {
       }
 
       // Validate the new values on model
-      if (name) {
+      if (name && name.length > 5) {
         todoFound.name = name;
       }
 
-      if (status !== undefined) {
-        todoFound.status = status;
+      if (group !== undefined) {
+        if (group === null || group <= 0) {
+          todoFound.group = null;
+        } else {
+          let groupFound = null;
+          const groupRepository = new GroupRepository();
+          try {
+            groupFound = await groupRepository.getOneById(group);
+          } catch (error) {
+            console.error(error);
+            res.status(404).send('Group not found');
+            return;
+          }
+          todoFound.group = groupFound;
+        }
       }
 
       if (tasks && tasks.length > 0) {
@@ -372,7 +379,7 @@ class TodoController {
       }
 
       // Check if the user can delete this todo
-      if (!Utils.hasGrantAccess<Todo>(connectedUser, todoFound)) {
+      if (!Utils.hasGrantAccess<Todo>(connectedUser, todoFound, true)) {
         console.error('The connected user has no grant access on this todo.');
         res.status(403).send();
         return;

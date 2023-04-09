@@ -41,12 +41,9 @@ export const toTaskResponse = (task: Task, withDate = false): ITaskResponse => {
 export const toGroupResponse = (
   group: Group,
   partial = false,
-): IGroupResponse => {
+): IGroupResponse | number => {
   if (partial) {
-    return {
-      id: group.id,
-      name: group.name,
-    };
+    return group.id;
   }
   return {
     id: group.id,
