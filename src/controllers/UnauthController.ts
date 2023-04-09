@@ -1,5 +1,5 @@
 import {validate} from 'class-validator';
-import {Request, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 import {getRepository} from 'typeorm';
 
 import {User} from '../entity/user/User';
@@ -11,77 +11,106 @@ import {
 import {mailService} from '../shared/mail';
 
 class UnauthController {
-  public static helloWorld = (req: Request, res: Response) => {
-    res.json({message: 'Hello World !'});
-  };
-
-  public static ping = (req: Request, res: Response) => {
-    res.json({isAlive: true});
-  };
-
-  public static newUser = async (req: Request, res: Response) => {
-    // Get parameters from the body
-    const {username, password, email} = req.body as ICreateUserRequest;
-    const user = new User();
-    user.username = username;
-    user.password = password;
-    user.email = email;
-    user.role = 'USER';
-
-    // Validade if the parameters are ok
-    const errors = await validate(user);
-    if (errors.length > 0) {
-      res.status(400).send(errors);
-      return;
-    }
-
-    // Hash the password, to securely store on DB
-    user.hashPassword();
-
-    // Create the refresh secret
-    user.createOrUpdateRefreshSecret();
-
-    // Try to save. If fails, the username is already in use
-    const userRepository = getRepository(User);
+  public static helloWorld = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      await userRepository.save(user);
+      res.json({message: 'Hello World !'});
     } catch (e) {
-      res.status(409).send('username already in use');
-      return;
+      next(e);
     }
-
-    // If all ok, send 201 response
-    res.status(201).send('User created');
   };
 
-  public static resetPassword = async (req: Request, res: Response) => {
-    const {email} = req.body as IResetPasswordRequest;
-    if (!email) {
-      res.status(400).send('Email is missing');
-      return;
-    }
-
-    // Get the user by email
-    const userRepository = getRepository(User);
+  public static ping = (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userFound = await userRepository
-        .createQueryBuilder('user')
-        .where('user.email = :email', {email})
-        .getOne();
-
-      // Send an email with an URL to reset the password
-      mailService.sendResetPasswordMail(userFound.email);
-      res.status(204).send();
+      res.json({isAlive: true});
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
-      if (e instanceof MailError) {
-        res.status(500).send('Internal Server Error');
-      } else {
-        res.status(400).send("This email doesn't exist");
+      next(e);
+    }
+  };
+
+  public static newUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      // Get parameters from the body
+      const {username, password, email} = req.body as ICreateUserRequest;
+      const user = new User();
+      user.username = username;
+      user.password = password;
+      user.email = email;
+      user.role = 'USER';
+
+      // Validade if the parameters are ok
+      const errors = await validate(user);
+      if (errors.length > 0) {
+        res.status(400).send(errors);
+        return;
       }
+
+      // Hash the password, to securely store on DB
+      user.hashPassword();
+
+      // Create the refresh secret
+      user.createOrUpdateRefreshSecret();
+
+      // Try to save. If fails, the username is already in use
+      const userRepository = getRepository(User);
+      try {
+        await userRepository.save(user);
+      } catch (e) {
+        res.status(409).send('username already in use');
+        return;
+      }
+
+      // If all ok, send 201 response
+      res.status(201).send('User created');
+    } catch (e) {
+      next(e);
     }
-    return;
+  };
+
+  public static resetPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const {email} = req.body as IResetPasswordRequest;
+      if (!email) {
+        res.status(400).send('Email is missing');
+        return;
+      }
+
+      // Get the user by email
+      const userRepository = getRepository(User);
+      try {
+        const userFound = await userRepository
+          .createQueryBuilder('user')
+          .where('user.email = :email', {email})
+          .getOne();
+
+        // Send an email with an URL to reset the password
+        mailService.sendResetPasswordMail(userFound.email);
+        res.status(204).send();
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+        if (e instanceof MailError) {
+          next(e);
+          return;
+        } else {
+          res.status(400).send("This email doesn't exist");
+          return;
+        }
+      }
+    } catch (e) {
+      next(e);
+    }
   };
 }
 

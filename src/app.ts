@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import express from 'express';
+import express, {Request, Response, NextFunction} from 'express';
 import helmet from 'helmet';
 import swaggerUI from 'swagger-ui-express';
 import swaggerJsDoc, {Options, SwaggerDefinition} from 'swagger-jsdoc';
@@ -56,6 +56,39 @@ const swaggerSpec = swaggerJsDoc(options);
 // Create a new express application instance
 export const app = express();
 
+/**
+ *
+ * @param err
+ * @param req
+ * @param res
+ * @param next
+ */
+function errorHandler(
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  console.error(err);
+  res.status(500).send('Service unavailable !');
+}
+
+/**
+ *
+ * @param err
+ * @param req
+ * @param res
+ * @param next
+ */
+function logger(err: Error, req: Request, res: Response, next: NextFunction) {
+  console.log('test');
+  console.debug(req);
+  console.debug(req.path);
+  console.debug(req.body);
+  console.debug(req.params);
+  // next();
+}
+
 // Call middlewares
 app.use(cors());
 app.use(helmet());
@@ -67,5 +100,10 @@ app.use(
   swaggerUI.setup(swaggerSpec, {explorer: true}),
 );
 
+app.use(logger);
+
 // Set all routes from routes folder
 app.use('/', routes);
+
+// Set error handler to not display the stack trace
+app.use(errorHandler);

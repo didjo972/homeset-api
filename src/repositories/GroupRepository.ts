@@ -12,7 +12,14 @@ class GroupRepository extends BaseRepository<Group> {
     return this.createQueryBuilder('group')
       .leftJoinAndSelect('group.owner', 'owner')
       .leftJoinAndSelect('group.users', 'users')
-      .select(['group.id', 'group.name', 'owner.id', 'owner.username', 'users.id', 'users.username'])
+      .select([
+        'group.id',
+        'group.name',
+        'owner.id',
+        'owner.username',
+        'users.id',
+        'users.username',
+      ])
       .where('group.id = :id', {id})
       .getOneOrFail();
   }
