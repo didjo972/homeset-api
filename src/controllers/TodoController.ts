@@ -43,7 +43,7 @@ class TodoController {
         // Get the todos from database
         const todoRepository = new TodoRepository();
         let todoToUpdate: Todo;
-        todoToUpdate = await todoRepository.getOneById(id);
+        todoToUpdate = await todoRepository.getOneById(id, connectedUser.id);
 
         if (todoToUpdate) {
           console.info('A todo has been found: ' + todoToUpdate.id);
@@ -72,7 +72,10 @@ class TodoController {
             let groupFound = null;
             const groupRepository = new GroupRepository();
             try {
-              groupFound = await groupRepository.getOneById(group);
+              groupFound = await groupRepository.getOneById(
+                group,
+                connectedUser.id,
+              );
             } catch (error) {
               console.error(error);
               res.status(404).send('Group not found');
@@ -183,7 +186,7 @@ class TodoController {
       const todoRepository = new TodoRepository();
       let todoFound: Todo;
       try {
-        todoFound = await todoRepository.getOneById(id);
+        todoFound = await todoRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         // If not found, send a 404 response
         res.status(404).send('Todo not found');
@@ -211,7 +214,10 @@ class TodoController {
           let groupFound = null;
           const groupRepository = new GroupRepository();
           try {
-            groupFound = await groupRepository.getOneById(group);
+            groupFound = await groupRepository.getOneById(
+              group,
+              connectedUser.id,
+            );
           } catch (error) {
             console.error(error);
             res.status(404).send('Group not found');
@@ -322,7 +328,7 @@ class TodoController {
 
       let todoFound;
       try {
-        todoFound = await todoRepository.getOneById(id);
+        todoFound = await todoRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         console.error(error);
         res.status(404).send('Todo not found');
@@ -372,7 +378,7 @@ class TodoController {
       const todoRepository = new TodoRepository();
       let todoFound: Todo;
       try {
-        todoFound = await todoRepository.findOneOrFail(id);
+        todoFound = await todoRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         res.status(404).send('Todo not found');
         return;

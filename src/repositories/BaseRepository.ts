@@ -1,5 +1,7 @@
 import {Connection, ObjectType, Repository} from 'typeorm';
 
+export type UniqueIdentifierType = string | number;
+
 class BaseRepository<T> extends Repository<T> {
   private connection: Connection;
   private entity: ObjectType<T>;

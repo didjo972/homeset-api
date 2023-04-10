@@ -1,6 +1,6 @@
-import {EntityRepository, getConnectionManager} from 'typeorm';
+import {Brackets, EntityRepository, getConnectionManager} from 'typeorm';
 import {Group} from '../entity/user/Group';
-import BaseRepository from './BaseRepository';
+import BaseRepository, {UniqueIdentifierType} from './BaseRepository';
 
 @EntityRepository(Group)
 class GroupRepository extends BaseRepository<Group> {
@@ -8,10 +8,14 @@ class GroupRepository extends BaseRepository<Group> {
     super(Group, getConnectionManager().get('default'));
   }
 
-  public getOneById(id: string | number): Promise<Group> {
+  public getOneById(
+    id: UniqueIdentifierType,
+    idUser: UniqueIdentifierType,
+  ): Promise<Group> {
     return this.createQueryBuilder('group')
       .leftJoinAndSelect('group.owner', 'owner')
       .leftJoinAndSelect('group.users', 'users')
+      .leftJoin('group.users', 'user')
       .select([
         'group.id',
         'group.name',
@@ -21,14 +25,19 @@ class GroupRepository extends BaseRepository<Group> {
         'users.username',
       ])
       .where('group.id = :id', {id})
+      .andWhere(
+        new Brackets(qb => {
+          qb.where('user.id = :idUser', {idUser});
+          qb.orWhere('owner.id = :idUser', {idUser});
+        }),
+      )
       .getOneOrFail();
   }
 
-  public findAll(id: string | number): Promise<Group[]> {
+  public findAll(idUser: string | number): Promise<Group[]> {
     return this.createQueryBuilder('group')
       .leftJoinAndSelect('group.owner', 'owner')
       .leftJoinAndSelect('group.users', 'users')
-      .leftJoin('group.users', 'user')
       .select([
         'group.id',
         'group.name',
@@ -39,8 +48,9 @@ class GroupRepository extends BaseRepository<Group> {
         'users.id',
         'users.username',
       ])
-      .where('owner.id = :id', {id})
-      .orWhere('user.id = :id', {id})
+      .where('owner.id = :idUser', {idUser})
+      .orWhere('users.id = :idUser', {idUser})
+      .addOrderBy('group.name', 'DESC')
       .getMany();
   }
 }

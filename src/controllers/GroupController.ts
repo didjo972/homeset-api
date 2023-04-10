@@ -42,7 +42,7 @@ class GroupController {
         // Get the groups from database
         const groupRepository = new GroupRepository();
         let groupToUpdate: Group;
-        groupToUpdate = await groupRepository.findOne(id);
+        groupToUpdate = await groupRepository.getOneById(id, connectedUser.id);
 
         if (groupToUpdate) {
           console.info('A group has been found: ' + groupToUpdate.id);
@@ -136,7 +136,7 @@ class GroupController {
       const groupRepository = new GroupRepository();
       let groupFound: Group;
       try {
-        groupFound = await groupRepository.getOneById(id);
+        groupFound = await groupRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         // If not found, send a 404 response
         res.status(404).send('Group not found');
@@ -267,7 +267,7 @@ class GroupController {
 
       let groupFound;
       try {
-        groupFound = await groupRepository.getOneById(id);
+        groupFound = await groupRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         console.error(error);
         res.status(404).send('Group not found');
