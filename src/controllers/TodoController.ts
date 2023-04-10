@@ -174,7 +174,7 @@ class TodoController {
       }
 
       // Get values from the body
-      const {name, tasks = [], group} = req.body as IUpdateTodoRequest;
+      const {name, tasks, group} = req.body as IUpdateTodoRequest;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -221,7 +221,7 @@ class TodoController {
         }
       }
 
-      if (tasks && tasks.length > 0) {
+      if (tasks && tasks.length >= 0) {
         const updatedTasks = tasks.map(taskReq => {
           if (taskReq.id) {
             const taskFound = todoFound.tasks.find(

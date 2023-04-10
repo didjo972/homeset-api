@@ -127,7 +127,7 @@ class GroupController {
       }
 
       // Get values from the body
-      const {name, owner, users = []} = req.body as IUpdateGroupRequest;
+      const {name, owner, users} = req.body as IUpdateGroupRequest;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -160,11 +160,15 @@ class GroupController {
       // Get the owner if need
       const userRepository = getRepository(User);
       if (owner !== undefined) {
-        try {
-          const ownerFound = await userRepository.findOneOrFail(owner.id);
-          groupFound.owner = ownerFound;
-        } catch (e) {
-          console.warn("The new owner can't be set.");
+        if (owner === null) {
+          groupFound.owner = null;
+        } else {
+          try {
+            const ownerFound = await userRepository.findOneOrFail(owner.id);
+            groupFound.owner = ownerFound;
+          } catch (e) {
+            console.warn("The new owner can't be set.");
+          }
         }
       }
 
