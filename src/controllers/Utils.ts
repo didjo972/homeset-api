@@ -36,11 +36,13 @@ class Utils {
         (user: User) => user.id === connectedUser.id,
       );
     } else {
-      businessEntity.group &&
+      return (
+        businessEntity.group &&
         businessEntity.group.users &&
         !!businessEntity.group.users.find(
           (user: User) => user.id === connectedUser.id,
-        );
+        )
+      );
     }
   };
 }
