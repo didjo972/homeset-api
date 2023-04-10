@@ -29,6 +29,8 @@ class Utils {
     businessEntity: T | any,
     deleteAction: boolean = false,
   ): boolean => {
+    console.debug('Check grant access on this business entity:');
+    console.debug(businessEntity);
     if (deleteAction || businessEntity.owner.id === connectedUser.id) {
       return businessEntity.owner.id === connectedUser.id;
     } else if (businessEntity instanceof Group) {
