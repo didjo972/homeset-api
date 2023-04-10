@@ -43,7 +43,13 @@ class TodoController {
         // Get the todos from database
         const todoRepository = new TodoRepository();
         let todoToUpdate: Todo;
-        todoToUpdate = await todoRepository.getOneById(id, connectedUser.id);
+        try {
+          todoToUpdate = await todoRepository.getOneById(id, connectedUser.id);
+        } catch (e) {
+          console.error(e);
+          res.status(404).send('Todo not found');
+          return;
+        }
 
         if (todoToUpdate) {
           console.info('A todo has been found: ' + todoToUpdate.id);
@@ -287,10 +293,16 @@ class TodoController {
 
       // Get todos from database
       const todoRepository = new TodoRepository();
-      const todos = await todoRepository.findAll(connectedUser.id);
-
-      // Send the todos object
-      res.send(todos.map(toTodoResponse));
+      try {
+        const todos = await todoRepository.findAll(connectedUser.id);
+        // Send the todos object
+        res.send(todos.map(toTodoResponse));
+        return;
+      } catch (e) {
+        console.error(e);
+        res.status(404).send('Not found');
+        return;
+      }
     } catch (e) {
       next(e);
     }
@@ -391,7 +403,7 @@ class TodoController {
         return;
       }
 
-      await todoRepository.delete(todoFound.id);
+      await todoRepository.softDelete(todoFound.id);
 
       // After all send a 204 (no content, but accepted) response
       res.status(204).send();

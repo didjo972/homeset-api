@@ -31,24 +31,17 @@ class Utils {
   ): boolean => {
     console.debug('Check grant access delete on this business entity:');
     console.debug(businessEntity);
-    return true;
-    // TODO Need to refactor the ability to give access on delete
-
-    // if (deleteAction || businessEntity.owner.id === connectedUser.id) {
-    //   return businessEntity.owner.id === connectedUser.id;
-    // } else if (businessEntity instanceof Group) {
-    //   return !!businessEntity.users.find(
-    //     (user: User) => user.id === connectedUser.id,
-    //   );
-    // } else {
-    //   return (
-    //     businessEntity.group &&
-    //     businessEntity.group.users &&
-    //     !!businessEntity.group.users.find(
-    //       (user: User) => user.id === connectedUser.id,
-    //     )
-    //   );
-    // }
+    if (!deleteAction) {
+      return true;
+    } else {
+      if (businessEntity instanceof Group) {
+        return !!businessEntity.users.find(
+          (user: User) => user.id === connectedUser.id,
+        );
+      } else {
+        return businessEntity.owner.id === connectedUser.id;
+      }
+    }
   };
 }
 

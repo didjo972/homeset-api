@@ -42,7 +42,15 @@ class GroupController {
         // Get the groups from database
         const groupRepository = new GroupRepository();
         let groupToUpdate: Group;
-        groupToUpdate = await groupRepository.getOneById(id, connectedUser.id);
+        try {
+          groupToUpdate = await groupRepository.getOneById(
+            id,
+            connectedUser.id,
+          );
+        } catch (error) {
+          console.error(error);
+          res.status(404).send('Group not found');
+        }
 
         if (groupToUpdate) {
           console.info('A group has been found: ' + groupToUpdate.id);
@@ -66,7 +74,13 @@ class GroupController {
             res.status(400).send(errors);
             return;
           }
-          await groupRepository.save(groupToUpdate);
+          try {
+            await groupRepository.save(groupToUpdate);
+          } catch (e) {
+            console.error(e);
+            res.status(400).send('Missing param');
+            return;
+          }
           res.status(200).send(toGroupResponse(groupToUpdate));
           return;
         }
@@ -167,7 +181,9 @@ class GroupController {
             const ownerFound = await userRepository.findOneOrFail(owner.id);
             groupFound.owner = ownerFound;
           } catch (e) {
-            console.warn("The new owner can't be set.");
+            console.error(e);
+            res.status(404).send("The new owner can't be set.");
+            return;
           }
         }
       }
@@ -226,10 +242,17 @@ class GroupController {
 
       // Get groups from database
       const groupRepository = new GroupRepository();
-      const groups = await groupRepository.findAll(connectedUser.id);
+      try {
+        const groups = await groupRepository.findAll(connectedUser.id);
 
-      // Send the groups object
-      res.send(groups.map(group => toGroupResponse(group)));
+        // Send the groups object
+        res.send(groups.map(group => toGroupResponse(group)));
+        return;
+      } catch (error) {
+        console.error(error);
+        res.status(404).send('Not found');
+        return;
+      }
     } catch (e) {
       next(e);
     }
@@ -281,6 +304,58 @@ class GroupController {
       }
       res.send(toGroupResponse(groupFound));
       return;
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  public static deleteGroup = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      console.info(
+        'Delete a Group endpoint has been called with: ' +
+          'path param ' +
+          req.params.id,
+      );
+
+      // Get the connected user
+      let connectedUser: User;
+      try {
+        connectedUser = await Utils.getUserConnected(res);
+        console.info(
+          `The user ${connectedUser.username} is known and connected`,
+        );
+      } catch (e) {
+        res.status(401).send();
+        return;
+      }
+
+      // Get the ID from the url
+      const id = req.params.id;
+
+      const groupRepository = new GroupRepository();
+      let groupFound: Group;
+      try {
+        groupFound = await groupRepository.getOneById(id, connectedUser.id);
+      } catch (error) {
+        res.status(404).send('Todo not found');
+        return;
+      }
+
+      // Check if the user can delete this todo
+      if (!Utils.hasGrantAccess<Group>(connectedUser, groupFound, true)) {
+        console.error('The connected user has no grant access on this group.');
+        res.status(403).send();
+        return;
+      }
+
+      await groupRepository.softDelete(groupFound.id);
+
+      // After all send a 204 (no content, but accepted) response
+      res.status(204).send();
     } catch (e) {
       next(e);
     }
