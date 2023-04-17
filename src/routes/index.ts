@@ -7,6 +7,7 @@ import unauth from './unauth';
 import user from './user';
 import vehicle from './vehicle';
 import group from './group';
+import note from './note';
 
 const routes = Router();
 
@@ -17,6 +18,7 @@ routes.use('/todos', todo);
 routes.use('/recipes', recipe);
 routes.use('/vehicles', vehicle);
 routes.use('/groups', group);
+routes.use('/notes', note);
 routes.use('/', error);
 
 export default routes;

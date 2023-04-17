@@ -1,26 +1,25 @@
 import {validate} from 'class-validator';
 import {NextFunction, Request, Response} from 'express';
-import {Task} from '../entity/todolist/Task';
-import {Todo} from '../entity/todolist/Todo';
-import TodoRepository from '../repositories/TodoRepository';
+import {Note} from '../entity/notes/Note';
+import NoteRepository from '../repositories/NoteRepository';
 import Utils from './Utils';
 import {User} from '../entity/user/User';
 import {
-  IUpdateTodoRequest,
-  IUpsertTodoRequest,
+  IUpdateNoteRequest,
+  IUpsertNoteRequest,
 } from '../shared/api-request-interfaces';
-import {toTodoResponse} from '../transformers/transformers';
+import {toNoteResponse} from '../transformers/transformers';
 import GroupRepository from '../repositories/GroupRepository';
 
-class TodoController {
-  public static upsertTodo = async (
+class NoteController {
+  public static upsertNote = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Create or Update Todo endpoint has been called with: ' +
+        'Create or Update Note endpoint has been called with: ' +
           req.body.toString(),
       );
 
@@ -37,27 +36,27 @@ class TodoController {
       }
 
       // Get parameters from the body
-      const {id, name, group, tasks = []} = req.body as IUpsertTodoRequest;
+      const {id, name, data, group} = req.body as IUpsertNoteRequest;
 
       if (id) {
-        // Get the todos from database
-        const todoRepository = new TodoRepository();
-        let todoToUpdate: Todo;
+        // Get the notes from database
+        const noteRepository = new NoteRepository();
+        let noteToUpdate: Note;
         try {
-          todoToUpdate = await todoRepository.getOneById(id, connectedUser.id);
+          noteToUpdate = await noteRepository.getOneById(id, connectedUser.id);
         } catch (e) {
           console.error(e);
-          res.status(404).send('Todo not found');
+          res.status(404).send('Note not found');
           return;
         }
 
-        if (todoToUpdate) {
-          console.info('A todo has been found: ' + todoToUpdate.id);
+        if (noteToUpdate) {
+          console.info('A note has been found: ' + noteToUpdate.id);
 
-          // Check if the user can edit this todo
-          if (!Utils.hasGrantAccess<Todo>(connectedUser, todoToUpdate)) {
+          // Check if the user can edit this note
+          if (!Utils.hasGrantAccess<Note>(connectedUser, noteToUpdate)) {
             console.error(
-              'The connected user has no grant access on this todo.',
+              'The connected user has no grant access on this note.',
             );
             res.status(403).send();
             return;
@@ -65,11 +64,15 @@ class TodoController {
 
           // Validate the new values on model
           if (name) {
-            todoToUpdate.name = name;
+            noteToUpdate.name = name;
+          }
+
+          if (data) {
+            noteToUpdate.data = data;
           }
 
           if (group === null || group <= 0) {
-            todoToUpdate.group = null;
+            noteToUpdate.group = null;
           } else {
             let groupFound = null;
             const groupRepository = new GroupRepository();
@@ -83,84 +86,57 @@ class TodoController {
               res.status(404).send('Group not found');
               return;
             }
-            todoToUpdate.group = groupFound;
+            noteToUpdate.group = groupFound;
           }
 
-          if (tasks && tasks.length > 0) {
-            const updatedTasks = tasks.map(taskReq => {
-              if (taskReq.id) {
-                const taskFound = todoToUpdate.tasks.find(
-                  task => task.id === taskReq.id,
-                );
-                if (taskFound) {
-                  if (taskReq.description) {
-                    taskFound.description = taskReq.description;
-                  }
-                  if (taskReq.status !== undefined) {
-                    taskFound.status = taskReq.status;
-                  }
-                  return taskFound;
-                } else {
-                  console.error(`No task with id: ${taskReq.id} found.`);
-                }
-              }
-
-              if (taskReq.description) {
-                return new Task(taskReq);
-              }
-            });
-            todoToUpdate.tasks = updatedTasks;
-          }
-
-          const errors = await validate(todoToUpdate);
+          const errors = await validate(noteToUpdate);
           if (errors.length > 0) {
             res.status(400).send(errors);
             return;
           }
 
-          await todoRepository.save(todoToUpdate);
-          res.status(200).send(toTodoResponse(todoToUpdate));
+          await noteRepository.save(noteToUpdate);
+          res.status(200).send(toNoteResponse(noteToUpdate));
           return;
         }
       }
 
-      const todoToCreate = new Todo();
-      todoToCreate.name = name;
-      todoToCreate.tasks = tasks.map(task => new Task(task));
-      todoToCreate.status = false;
-      todoToCreate.owner = connectedUser;
+      const noteToCreate = new Note();
+      noteToCreate.name = name;
+      noteToCreate.data = data;
+      noteToCreate.owner = connectedUser;
 
       // Validade if the parameters are ok
-      const errors = await validate(todoToCreate);
+      const errors = await validate(noteToCreate);
       if (errors.length > 0) {
         res.status(400).send(errors);
         return;
       }
 
-      const todoRepository = new TodoRepository();
+      const noteRepository = new NoteRepository();
       try {
-        await todoRepository.save(todoToCreate);
+        await noteRepository.save(noteToCreate);
       } catch (e) {
         res.status(400).send('Missing param');
         return;
       }
 
       // If all ok, send 201 response
-      res.status(201).send(toTodoResponse(todoToCreate));
+      res.status(201).send(toNoteResponse(noteToCreate));
       return;
     } catch (e) {
       next(e);
     }
   };
 
-  public static editTodo = async (
+  public static editNote = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Edit Todo endpoint has been called with: ' +
+        'Edit Note endpoint has been called with: ' +
           req.body.toString() +
           ' and path param ' +
           req.params.id,
@@ -179,39 +155,39 @@ class TodoController {
       }
 
       // Get values from the body
-      const {name, tasks, group} = req.body as IUpdateTodoRequest;
+      const {name, data, group} = req.body as IUpdateNoteRequest;
 
       // Get the ID from the url
       const id = req.params.id;
 
-      // Get the todos from database
-      const todoRepository = new TodoRepository();
-      let todoFound: Todo;
+      // Get the notes from database
+      const noteRepository = new NoteRepository();
+      let noteFound: Note;
       try {
-        todoFound = await todoRepository.getOneById(id, connectedUser.id);
+        noteFound = await noteRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         // If not found, send a 404 response
-        res.status(404).send('Todo not found');
+        res.status(404).send('Note not found');
         return;
       }
 
-      console.info('A todo has been found: ' + todoFound.id);
+      console.info('A note has been found: ' + noteFound.id);
 
-      // Check if the user can edit this todo
-      if (!Utils.hasGrantAccess<Todo>(connectedUser, todoFound)) {
-        console.error('The connected user has no grant access on this todo.');
+      // Check if the user can edit this note
+      if (!Utils.hasGrantAccess<Note>(connectedUser, noteFound)) {
+        console.error('The connected user has no grant access on this note.');
         res.status(403).send();
         return;
       }
 
       // Validate the new values on model
-      if (name && name.length > 5) {
-        todoFound.name = name;
+      if (name && name.length > 3) {
+        noteFound.name = name;
       }
 
       if (group !== undefined) {
         if (group === null || group <= 0) {
-          todoFound.group = null;
+          noteFound.group = null;
         } else {
           let groupFound = null;
           const groupRepository = new GroupRepository();
@@ -225,43 +201,21 @@ class TodoController {
             res.status(404).send('Group not found');
             return;
           }
-          todoFound.group = groupFound;
+          noteFound.group = groupFound;
         }
       }
 
-      if (tasks && tasks.length >= 0) {
-        const updatedTasks = tasks.map(taskReq => {
-          if (taskReq.id) {
-            const taskFound = todoFound.tasks.find(
-              task => task.id === taskReq.id,
-            );
-            if (taskFound) {
-              if (taskReq.description) {
-                taskFound.description = taskReq.description;
-              }
-              if (taskReq.status !== undefined) {
-                taskFound.status = taskReq.status;
-              }
-              return taskFound;
-            } else {
-              console.error(`No task with id: ${taskReq.id} found.`);
-            }
-          }
-
-          if (taskReq.description) {
-            return new Task(taskReq);
-          }
-        });
-        todoFound.tasks = updatedTasks;
+      if (data !== undefined) {
+        noteFound.data = data;
       }
 
-      const errors = await validate(todoFound);
+      const errors = await validate(noteFound);
       if (errors.length > 0) {
         res.status(400).send(errors);
         return;
       }
-      await todoRepository.save(todoFound);
-      res.status(200).send(toTodoResponse(todoFound));
+      await noteRepository.save(noteFound);
+      res.status(200).send(toNoteResponse(noteFound));
     } catch (e) {
       next(e);
     }
@@ -273,7 +227,7 @@ class TodoController {
     next: NextFunction,
   ) => {
     try {
-      console.info('Get all Todos endpoint has been called');
+      console.info('Get all Notes endpoint has been called');
 
       // Get the connected user
       let connectedUser: User;
@@ -287,12 +241,12 @@ class TodoController {
         return;
       }
 
-      // Get todos from database
-      const todoRepository = new TodoRepository();
+      // Get notes from database
+      const noteRepository = new NoteRepository();
       try {
-        const todos = await todoRepository.findAll(connectedUser.id);
+        const notes = await noteRepository.findAll(connectedUser.id);
         // Send the todos object
-        res.send(todos.map(toTodoResponse));
+        res.send(notes.map(toNoteResponse));
         return;
       } catch (e) {
         console.error(e);
@@ -311,7 +265,7 @@ class TodoController {
   ) => {
     try {
       console.info(
-        'Get one Todo endpoint has been called with: ' +
+        'Get one Note endpoint has been called with: ' +
           'path param ' +
           req.params.id,
       );
@@ -331,39 +285,39 @@ class TodoController {
       // Get the ID from the url
       const id: number = +req.params.id;
 
-      // Get the todos from database
-      const todoRepository = new TodoRepository();
+      // Get the notes from database
+      const noteRepository = new NoteRepository();
 
-      let todoFound;
+      let noteFound;
       try {
-        todoFound = await todoRepository.getOneById(id, connectedUser.id);
+        noteFound = await noteRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         console.error(error);
-        res.status(404).send('Todo not found');
+        res.status(404).send('Note not found');
       }
 
-      // Check if the user can edit this todo
-      if (!Utils.hasGrantAccess<Todo>(connectedUser, todoFound)) {
-        console.error('The connected user has no grant access on this todo.');
+      // Check if the user can edit this note
+      if (!Utils.hasGrantAccess<Note>(connectedUser, noteFound)) {
+        console.error('The connected user has no grant access on this note.');
         res.status(403).send();
         return;
       }
 
-      res.send(toTodoResponse(todoFound));
+      res.send(toNoteResponse(noteFound));
       return;
     } catch (e) {
       next(e);
     }
   };
 
-  public static deleteTodo = async (
+  public static deleteNote = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Delete a Todo endpoint has been called with: ' +
+        'Delete a Note endpoint has been called with: ' +
           'path param ' +
           req.params.id,
       );
@@ -383,23 +337,23 @@ class TodoController {
       // Get the ID from the url
       const id = req.params.id;
 
-      const todoRepository = new TodoRepository();
-      let todoFound: Todo;
+      const noteRepository = new NoteRepository();
+      let noteFound: Note;
       try {
-        todoFound = await todoRepository.getOneById(id, connectedUser.id);
+        noteFound = await noteRepository.getOneById(id, connectedUser.id);
       } catch (error) {
-        res.status(404).send('Todo not found');
+        res.status(404).send('Note not found');
         return;
       }
 
-      // Check if the user can delete this todo
-      if (!Utils.hasGrantAccess<Todo>(connectedUser, todoFound, true)) {
-        console.error('The connected user has no grant access on this todo.');
+      // Check if the user can delete this note
+      if (!Utils.hasGrantAccess<Note>(connectedUser, noteFound, true)) {
+        console.error('The connected user has no grant access on this note.');
         res.status(403).send();
         return;
       }
 
-      await todoRepository.softDelete(todoFound.id);
+      await noteRepository.softDelete(noteFound.id);
 
       // After all send a 204 (no content, but accepted) response
       res.status(204).send();
@@ -409,4 +363,4 @@ class TodoController {
   };
 }
 
-export default TodoController;
+export default NoteController;

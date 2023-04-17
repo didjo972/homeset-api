@@ -10,6 +10,7 @@ import {Task} from './todolist/Task';
 import {Todo} from './todolist/Todo';
 import {User} from './user/User';
 import {Group} from './user/Group';
+import {Note} from './notes/Note';
 
 export const entities = [
   User,
@@ -24,4 +25,5 @@ export const entities = [
   Servicing,
   Vehicle,
   Group,
+  Note,
 ];

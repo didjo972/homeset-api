@@ -12,6 +12,7 @@ import {Todo} from '../todolist/Todo';
 import {Item} from '../saveobject/Item';
 import AbstractEntity from '../abstract/AbstractEntity';
 import {Vehicle} from '../garage/Vehicle';
+import {Note} from '../notes/Note';
 
 /**
  * @swagger
@@ -49,6 +50,16 @@ import {Vehicle} from '../garage/Vehicle';
  *           readOnly: true
  *           items:
  *              $ref: '#/components/schemas/Item'
+ *         vehicles:
+ *           type: "array"
+ *           readOnly: true
+ *           items:
+ *              $ref: '#/components/schemas/Vehicle'
+ *         notes:
+ *           type: "array"
+ *           readOnly: true
+ *           items:
+ *              $ref: '#/components/schemas/Note'
  *         createdAt:
  *           type: string
  *           readOnly: true
@@ -83,6 +94,9 @@ export class Group extends AbstractEntity {
 
   @OneToMany(() => Vehicle, vehicle => vehicle.group)
   public vehicles: Vehicle[];
+
+  @OneToMany(() => Note, note => note.group)
+  public notes: Note[];
 
   constructor(id?: number) {
     super(id);

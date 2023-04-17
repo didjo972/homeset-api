@@ -36,3 +36,13 @@ export interface ITodoResponse {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface INoteResponse {
+  id: number;
+  name: string;
+  data: string;
+  owner: IUserResponse;
+  group: IGroupResponse | number;
+  createdAt: Date;
+  updatedAt: Date;
+}

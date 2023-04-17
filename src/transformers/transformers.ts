@@ -1,5 +1,6 @@
 import {
   IGroupResponse,
+  INoteResponse,
   ITaskResponse,
   ITodoResponse,
   IUserResponse,
@@ -8,6 +9,7 @@ import {Todo} from '../entity/todolist/Todo';
 import {Task} from '../entity/todolist/Task';
 import {User} from '../entity/user/User';
 import {Group} from '../entity/user/Group';
+import {Note} from '../entity/notes/Note';
 
 export const toUserResponse = (user: User, withDate = false): IUserResponse => {
   const userReponse: IUserResponse = {
@@ -69,5 +71,17 @@ export const toTodoResponse = (todo: Todo): ITodoResponse => {
       ? todo.tasks.map(task => toTaskResponse(task))
       : undefined,
     group: todo.group ? toGroupResponse(todo.group, true) : undefined,
+  };
+};
+
+export const toNoteResponse = (note: Note): INoteResponse => {
+  return {
+    id: note.id,
+    name: note.name,
+    data: note.data,
+    createdAt: note.createdAt,
+    updatedAt: note.updatedAt,
+    owner: note.owner ? toUserResponse(note.owner) : undefined,
+    group: note.group ? toGroupResponse(note.group, true) : undefined,
   };
 };

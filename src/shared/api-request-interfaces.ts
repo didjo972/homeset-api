@@ -21,7 +21,6 @@ export interface IResetPasswordRequest {
 export interface IUpsertTodoRequest {
   id?: number;
   name: string;
-  // status?: boolean;
   group?: number;
   tasks?: ICreateTaskRequest[];
 }
@@ -34,7 +33,6 @@ export interface ICreateTaskRequest {
 
 export interface IUpdateTodoRequest {
   name?: string;
-  // status?: boolean;
   tasks?: ICreateTaskRequest[];
   group?: number;
 }
@@ -62,4 +60,17 @@ export interface IUpdateGroupRequest {
   name?: string;
   users?: IUserRequest[];
   owner?: IUserRequest;
+}
+
+export interface IUpsertNoteRequest {
+  id: number;
+  name: string;
+  data?: string;
+  group?: number;
+}
+
+export interface IUpdateNoteRequest {
+  name?: string;
+  data?: string;
+  group?: number;
 }
