@@ -397,6 +397,8 @@ class NoteController {
 
       const ids = idsReq.map(item => item.id);
 
+      console.log(ids);
+
       // Get the notes from database
       let notesFound: Note[];
       try {
@@ -410,6 +412,7 @@ class NoteController {
             group: {users: {id: connectedUser.id}},
           },
         ]);
+        await NoteRepository.softDelete(notesFound.map(note => note.id));
         res.status(204).send();
         return;
       } catch (error) {
