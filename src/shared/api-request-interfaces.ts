@@ -74,3 +74,7 @@ export interface IUpdateNoteRequest {
   data?: string;
   group?: number;
 }
+
+export interface IDeleteNotesRequest {
+  id: number;
+}

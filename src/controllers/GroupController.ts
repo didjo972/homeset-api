@@ -2,14 +2,14 @@ import {NextFunction, Request, Response} from 'express';
 import {User} from '../entity/user/User';
 import {toGroupResponse} from '../transformers/transformers';
 import Utils from './Utils';
-import GroupRepository from '../repositories/GroupRepository';
 import {Group} from '../entity/user/Group';
 import {validate} from 'class-validator';
 import {
   IUpdateGroupRequest,
   IUpsertGroupRequest,
 } from '../shared/api-request-interfaces';
-import {getRepository} from 'typeorm';
+import {dataSource} from '../../ormconfig';
+import {GroupRepository} from '../repositories/GroupRepository';
 
 class GroupController {
   public static upsertGroup = async (
@@ -40,10 +40,9 @@ class GroupController {
 
       if (id) {
         // Get the groups from database
-        const groupRepository = new GroupRepository();
         let groupToUpdate: Group;
         try {
-          groupToUpdate = await groupRepository.getOneById(
+          groupToUpdate = await GroupRepository.getOneById(
             id,
             connectedUser.id,
           );
@@ -75,7 +74,7 @@ class GroupController {
             return;
           }
           try {
-            await groupRepository.save(groupToUpdate);
+            await GroupRepository.save(groupToUpdate);
           } catch (e) {
             console.error(e);
             res.status(400).send('Missing param');
@@ -98,9 +97,8 @@ class GroupController {
         return;
       }
 
-      const groupRepository = new GroupRepository();
       try {
-        await groupRepository.save(groupToCreate);
+        await GroupRepository.save(groupToCreate);
       } catch (e) {
         console.error(e);
         res.status(400).send('Missing param');
@@ -147,10 +145,9 @@ class GroupController {
       const id = req.params.id;
 
       // Get the groups from database
-      const groupRepository = new GroupRepository();
       let groupFound: Group;
       try {
-        groupFound = await groupRepository.getOneById(id, connectedUser.id);
+        groupFound = await GroupRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         // If not found, send a 404 response
         res.status(404).send('Group not found');
@@ -172,13 +169,15 @@ class GroupController {
       }
 
       // Get the owner if need
-      const userRepository = getRepository(User);
+      const userRepository = dataSource.getRepository(User);
       if (owner !== undefined) {
         if (owner === null) {
           groupFound.owner = null;
         } else {
           try {
-            const ownerFound = await userRepository.findOneOrFail(owner.id);
+            const ownerFound = await userRepository.findOneOrFail({
+              where: {id: owner.id},
+            });
             groupFound.owner = ownerFound;
           } catch (e) {
             console.error(e);
@@ -198,7 +197,9 @@ class GroupController {
               return userFound;
             } else {
               try {
-                return await userRepository.findOneOrFail(userReq.id);
+                return await userRepository.findOneOrFail({
+                  where: {id: userReq.id},
+                });
               } catch (e) {
                 console.warn("The owner can't be set.");
               }
@@ -213,7 +214,7 @@ class GroupController {
         res.status(400).send(errors);
         return;
       }
-      await groupRepository.save(groupFound);
+      await GroupRepository.save(groupFound);
       res.status(200).send(toGroupResponse(groupFound));
     } catch (e) {
       next(e);
@@ -241,9 +242,8 @@ class GroupController {
       }
 
       // Get groups from database
-      const groupRepository = new GroupRepository();
       try {
-        const groups = await groupRepository.findAll(connectedUser.id);
+        const groups = await GroupRepository.findAll(connectedUser.id);
 
         // Send the groups object
         res.send(groups.map(group => toGroupResponse(group)));
@@ -286,11 +286,9 @@ class GroupController {
       const id: number = +req.params.id;
 
       // Get the groups from database
-      const groupRepository = new GroupRepository();
-
       let groupFound;
       try {
-        groupFound = await groupRepository.getOneById(id, connectedUser.id);
+        groupFound = await GroupRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         console.error(error);
         res.status(404).send('Group not found');
@@ -336,10 +334,9 @@ class GroupController {
       // Get the ID from the url
       const id = req.params.id;
 
-      const groupRepository = new GroupRepository();
       let groupFound: Group;
       try {
-        groupFound = await groupRepository.getOneById(id, connectedUser.id);
+        groupFound = await GroupRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         res.status(404).send('Todo not found');
         return;
@@ -352,7 +349,7 @@ class GroupController {
         return;
       }
 
-      await groupRepository.softDelete(groupFound.id);
+      await GroupRepository.softDelete(groupFound.id);
 
       // After all send a 204 (no content, but accepted) response
       res.status(204).send();

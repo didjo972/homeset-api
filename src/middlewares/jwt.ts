@@ -1,9 +1,9 @@
 import {NextFunction, Request, Response} from 'express';
 import jwt, {JwtPayload} from 'jsonwebtoken';
-import {getRepository} from 'typeorm';
 
 import {User} from '../entity/user/User';
 import {IJwtPayload} from '../shared/interfaces';
+import {dataSource} from '../../ormconfig';
 
 export const checkJwt = async (
   req: Request,
@@ -51,10 +51,10 @@ export const checkRole = (roles: string[]) => {
     const id = jwtPayload.userId;
 
     // Get user role from the database
-    const userRepository = getRepository(User);
+    const userRepository = dataSource.getRepository(User);
     let user: User;
     try {
-      user = await userRepository.findOneOrFail(id);
+      user = await userRepository.findOneOrFail({where: {id}});
     } catch (e) {
       res.status(401).send();
     }
@@ -73,6 +73,7 @@ export const createTokens = async (
   secret: string,
   secret2: string,
 ) => {
+  console.log(secret);
   const createToken = jwt.sign(
     {userId: user.id, email: user.email, username: user.username},
     secret,
@@ -95,12 +96,12 @@ export const refreshTokens = async (refreshToken: string) => {
     // eslint-disable-next-line no-console
     console.error(err);
   }
-  const {userId} = jwtPayload as {[key: string]: string};
+  const {userId} = jwtPayload as {[key: string]: number};
   if (!userId) {
     throw new Error('This user does not exist.');
   }
-  const userRepository = getRepository(User);
-  const user = await userRepository.findOneOrFail(userId);
+  const userRepository = dataSource.getRepository(User);
+  const user = await userRepository.findOneOrFail({where: {id: userId}});
   if (!user) {
     throw new Error('This user does not exist.');
   }

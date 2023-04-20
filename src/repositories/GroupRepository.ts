@@ -1,17 +1,10 @@
-import {Brackets, EntityRepository, getConnectionManager} from 'typeorm';
+import {Brackets} from 'typeorm';
 import {Group} from '../entity/user/Group';
-import BaseRepository, {UniqueIdentifierType} from './BaseRepository';
+import {UniqueIdentifierType} from './BaseRepository';
+import {dataSource} from '../../ormconfig';
 
-@EntityRepository(Group)
-class GroupRepository extends BaseRepository<Group> {
-  constructor() {
-    super(Group, getConnectionManager().get('default'));
-  }
-
-  public getOneById(
-    id: UniqueIdentifierType,
-    idUser: UniqueIdentifierType,
-  ): Promise<Group> {
+export const GroupRepository = dataSource.getRepository(Group).extend({
+  getOneById(id: UniqueIdentifierType, idUser: UniqueIdentifierType): Group {
     return this.createQueryBuilder('group')
       .leftJoinAndSelect('group.owner', 'owner')
       .leftJoinAndSelect('group.users', 'users')
@@ -32,9 +25,8 @@ class GroupRepository extends BaseRepository<Group> {
         }),
       )
       .getOneOrFail();
-  }
-
-  public findAll(idUser: string | number): Promise<Group[]> {
+  },
+  findAll(idUser: string | number): Group[] {
     return this.createQueryBuilder('group')
       .leftJoinAndSelect('group.owner', 'owner')
       .leftJoinAndSelect('group.users', 'users')
@@ -52,7 +44,5 @@ class GroupRepository extends BaseRepository<Group> {
       .orWhere('users.id = :idUser', {idUser})
       .addOrderBy('group.name', 'DESC')
       .getMany();
-  }
-}
-
-export default GroupRepository;
+  },
+});

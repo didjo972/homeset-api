@@ -163,4 +163,7 @@ router.delete(
   NoteController.deleteNote as RequestHandler,
 );
 
+// Delete multiple notes
+router.delete('/', [checkJwt], NoteController.multiDelete as RequestHandler);
+
 export default router;

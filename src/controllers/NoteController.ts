@@ -1,15 +1,17 @@
 import {validate} from 'class-validator';
 import {NextFunction, Request, Response} from 'express';
 import {Note} from '../entity/notes/Note';
-import NoteRepository from '../repositories/NoteRepository';
 import Utils from './Utils';
 import {User} from '../entity/user/User';
 import {
+  IDeleteNotesRequest,
   IUpdateNoteRequest,
   IUpsertNoteRequest,
 } from '../shared/api-request-interfaces';
 import {toNoteResponse} from '../transformers/transformers';
-import GroupRepository from '../repositories/GroupRepository';
+import {GroupRepository} from '../repositories/GroupRepository';
+import {NoteRepository} from '../repositories/NoteRepository';
+import {In} from 'typeorm';
 
 class NoteController {
   public static upsertNote = async (
@@ -40,10 +42,9 @@ class NoteController {
 
       if (id) {
         // Get the notes from database
-        const noteRepository = new NoteRepository();
         let noteToUpdate: Note;
         try {
-          noteToUpdate = await noteRepository.getOneById(id, connectedUser.id);
+          noteToUpdate = await NoteRepository.getOneById(id, connectedUser.id);
         } catch (e) {
           console.error(e);
           res.status(404).send('Note not found');
@@ -75,9 +76,8 @@ class NoteController {
             noteToUpdate.group = null;
           } else {
             let groupFound = null;
-            const groupRepository = new GroupRepository();
             try {
-              groupFound = await groupRepository.getOneById(
+              groupFound = await GroupRepository.getOneById(
                 group,
                 connectedUser.id,
               );
@@ -95,7 +95,7 @@ class NoteController {
             return;
           }
 
-          await noteRepository.save(noteToUpdate);
+          await NoteRepository.save(noteToUpdate);
           res.status(200).send(toNoteResponse(noteToUpdate));
           return;
         }
@@ -106,6 +106,23 @@ class NoteController {
       noteToCreate.data = data;
       noteToCreate.owner = connectedUser;
 
+      if (group === null || group <= 0) {
+        noteToCreate.group = null;
+      } else {
+        let groupFound = null;
+        try {
+          groupFound = await GroupRepository.getOneById(
+            group,
+            connectedUser.id,
+          );
+        } catch (error) {
+          console.error(error);
+          res.status(404).send('Group not found');
+          return;
+        }
+        noteToCreate.group = groupFound;
+      }
+
       // Validade if the parameters are ok
       const errors = await validate(noteToCreate);
       if (errors.length > 0) {
@@ -113,9 +130,8 @@ class NoteController {
         return;
       }
 
-      const noteRepository = new NoteRepository();
       try {
-        await noteRepository.save(noteToCreate);
+        await NoteRepository.save(noteToCreate);
       } catch (e) {
         res.status(400).send('Missing param');
         return;
@@ -161,10 +177,9 @@ class NoteController {
       const id = req.params.id;
 
       // Get the notes from database
-      const noteRepository = new NoteRepository();
       let noteFound: Note;
       try {
-        noteFound = await noteRepository.getOneById(id, connectedUser.id);
+        noteFound = await NoteRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         // If not found, send a 404 response
         res.status(404).send('Note not found');
@@ -190,9 +205,8 @@ class NoteController {
           noteFound.group = null;
         } else {
           let groupFound = null;
-          const groupRepository = new GroupRepository();
           try {
-            groupFound = await groupRepository.getOneById(
+            groupFound = await GroupRepository.getOneById(
               group,
               connectedUser.id,
             );
@@ -214,7 +228,7 @@ class NoteController {
         res.status(400).send(errors);
         return;
       }
-      await noteRepository.save(noteFound);
+      await NoteRepository.save(noteFound);
       res.status(200).send(toNoteResponse(noteFound));
     } catch (e) {
       next(e);
@@ -242,9 +256,8 @@ class NoteController {
       }
 
       // Get notes from database
-      const noteRepository = new NoteRepository();
       try {
-        const notes = await noteRepository.findAll(connectedUser.id);
+        const notes = await NoteRepository.findAll(connectedUser.id);
         // Send the todos object
         res.send(notes.map(toNoteResponse));
         return;
@@ -286,11 +299,9 @@ class NoteController {
       const id: number = +req.params.id;
 
       // Get the notes from database
-      const noteRepository = new NoteRepository();
-
       let noteFound;
       try {
-        noteFound = await noteRepository.getOneById(id, connectedUser.id);
+        noteFound = await NoteRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         console.error(error);
         res.status(404).send('Note not found');
@@ -337,10 +348,9 @@ class NoteController {
       // Get the ID from the url
       const id = req.params.id;
 
-      const noteRepository = new NoteRepository();
       let noteFound: Note;
       try {
-        noteFound = await noteRepository.getOneById(id, connectedUser.id);
+        noteFound = await NoteRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         res.status(404).send('Note not found');
         return;
@@ -353,10 +363,61 @@ class NoteController {
         return;
       }
 
-      await noteRepository.softDelete(noteFound.id);
+      await NoteRepository.softDelete(noteFound.id);
 
       // After all send a 204 (no content, but accepted) response
       res.status(204).send();
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  public static multiDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      console.info('Delete Notes endpoint has been called');
+
+      // Get the connected user
+      let connectedUser: User;
+      try {
+        connectedUser = await Utils.getUserConnected(res);
+        console.info(
+          `The user ${connectedUser.username} is known and connected`,
+        );
+      } catch (e) {
+        res.status(401).send();
+        return;
+      }
+
+      // Get values from the body
+      const idsReq = req.body as IDeleteNotesRequest[];
+
+      const ids = idsReq.map(item => item.id);
+
+      // Get the notes from database
+      let notesFound: Note[];
+      try {
+        notesFound = await NoteRepository.findBy([
+          {
+            id: In(ids),
+            owner: {id: connectedUser.id},
+          },
+          {
+            id: In(ids),
+            group: {users: {id: connectedUser.id}},
+          },
+        ]);
+        res.status(204).send();
+        return;
+      } catch (error) {
+        console.error(error);
+        // If not found, send a 404 response
+        res.status(404).send('Note not found');
+        return;
+      }
     } catch (e) {
       next(e);
     }

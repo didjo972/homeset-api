@@ -1,17 +1,10 @@
-import {Brackets, EntityRepository, getConnectionManager} from 'typeorm';
+import {Brackets} from 'typeorm';
 import {Todo} from '../entity/todolist/Todo';
-import BaseRepository, {UniqueIdentifierType} from './BaseRepository';
+import {UniqueIdentifierType} from './BaseRepository';
+import {dataSource} from '../../ormconfig';
 
-@EntityRepository(Todo)
-class TodoRepository extends BaseRepository<Todo> {
-  constructor() {
-    super(Todo, getConnectionManager().get('default'));
-  }
-
-  public getOneById(
-    id: UniqueIdentifierType,
-    idUser: UniqueIdentifierType,
-  ): Promise<Todo> {
+export const TodoRepository = dataSource.getRepository(Todo).extend({
+  getOneById(id: UniqueIdentifierType, idUser: UniqueIdentifierType): Todo {
     return this.createQueryBuilder('todo')
       .leftJoinAndSelect('todo.tasks', 'task')
       .leftJoinAndSelect('todo.owner', 'owner')
@@ -41,9 +34,8 @@ class TodoRepository extends BaseRepository<Todo> {
       )
       .addOrderBy('task.status', 'ASC')
       .getOneOrFail();
-  }
-
-  public findAll(idUser: UniqueIdentifierType): Promise<Todo[]> {
+  },
+  findAll(idUser: UniqueIdentifierType): Todo[] {
     return this.createQueryBuilder('todo')
       .leftJoinAndSelect('todo.tasks', 'task')
       .leftJoinAndSelect('todo.owner', 'owner')
@@ -69,7 +61,5 @@ class TodoRepository extends BaseRepository<Todo> {
       .orderBy('todo.updatedAt', 'DESC')
       .addOrderBy('task.status', 'ASC')
       .getMany();
-  }
-}
-
-export default TodoRepository;
+  },
+});

@@ -1,6 +1,5 @@
 import {validate} from 'class-validator';
 import {NextFunction, Request, Response} from 'express';
-import {getRepository} from 'typeorm';
 
 import {User} from '../entity/user/User';
 import {createTokens} from '../middlewares/jwt';
@@ -10,6 +9,7 @@ import {
   ILoginRequest,
 } from '../shared/api-request-interfaces';
 import {toUserResponse} from '../transformers/transformers';
+import {dataSource} from '../../ormconfig';
 
 class AuthController {
   public static login = async (
@@ -26,7 +26,7 @@ class AuthController {
       }
 
       // Get user from database
-      const userRepository = getRepository(User);
+      const userRepository = dataSource.getRepository(User);
       let user: User;
       try {
         user = await userRepository.findOneOrFail({where: {email}});
@@ -76,10 +76,10 @@ class AuthController {
       }
 
       // Get user from the database
-      const userRepository = getRepository(User);
+      const userRepository = dataSource.getRepository(User);
       let user: User;
       try {
-        user = await userRepository.findOneOrFail(id);
+        user = await userRepository.findOneOrFail({where: {id}});
       } catch (e) {
         res.status(401).send();
       }

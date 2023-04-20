@@ -1,17 +1,10 @@
-import {Brackets, EntityRepository, getConnectionManager} from 'typeorm';
-import BaseRepository, {UniqueIdentifierType} from './BaseRepository';
+import {Brackets} from 'typeorm';
+import {UniqueIdentifierType} from './BaseRepository';
 import {Note} from '../entity/notes/Note';
+import {dataSource} from '../../ormconfig';
 
-@EntityRepository(Note)
-class NoteRepository extends BaseRepository<Note> {
-  constructor() {
-    super(Note, getConnectionManager().get('default'));
-  }
-
-  public getOneById(
-    id: UniqueIdentifierType,
-    idUser: UniqueIdentifierType,
-  ): Promise<Note> {
+export const NoteRepository = dataSource.getRepository(Note).extend({
+  getOneById(id: UniqueIdentifierType, idUser: UniqueIdentifierType): Note {
     return this.createQueryBuilder('note')
       .leftJoinAndSelect('note.owner', 'owner')
       .leftJoinAndSelect('note.group', 'group')
@@ -36,9 +29,8 @@ class NoteRepository extends BaseRepository<Note> {
         }),
       )
       .getOneOrFail();
-  }
-
-  public findAll(idUser: UniqueIdentifierType): Promise<Note[]> {
+  },
+  findAll(idUser: UniqueIdentifierType): Note[] {
     return this.createQueryBuilder('note')
       .leftJoinAndSelect('note.owner', 'owner')
       .leftJoinAndSelect('note.group', 'group')
@@ -59,7 +51,5 @@ class NoteRepository extends BaseRepository<Note> {
       .orWhere('users.id = :idUser', {idUser})
       .orderBy('note.updatedAt', 'DESC')
       .getMany();
-  }
-}
-
-export default NoteRepository;
+  },
+});

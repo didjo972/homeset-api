@@ -4,6 +4,7 @@ import {User} from '../entity/user/User';
 import {IJwtPayload} from '../shared/interfaces';
 import AbstractBusiness from '../entity/abstract/AbstractBusiness';
 import {Group} from '../entity/user/Group';
+import {dataSource} from '../../ormconfig';
 
 class Utils {
   public static getUserConnected = async (res: Response): Promise<User> => {
@@ -12,8 +13,8 @@ class Utils {
     const id = userId;
 
     // Get user from the database
-    const userRepository = getRepository(User);
-    return await userRepository.findOneOrFail(id);
+    const userRepository = dataSource.getRepository(User);
+    return await userRepository.findOneOrFail({where: {id}});
   };
 
   // FIXME Type the generic type
