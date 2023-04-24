@@ -73,7 +73,6 @@ export const createTokens = async (
   secret: string,
   secret2: string,
 ) => {
-  console.log(secret);
   const createToken = jwt.sign(
     {userId: user.id, email: user.email, username: user.username},
     secret,

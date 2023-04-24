@@ -23,12 +23,13 @@ class Utils {
    *
    * @param connectedUser the user
    * @param businessEntity the entity
+   * @param deleteAction
    * @returns a boolean
    */
   public static hasGrantAccess = <T extends AbstractBusiness>(
     connectedUser: User,
     businessEntity: T | any,
-    deleteAction: boolean = false,
+    deleteAction = false,
   ): boolean => {
     console.debug('Check grant access delete on this business entity:');
     console.debug(businessEntity);

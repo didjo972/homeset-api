@@ -2,15 +2,17 @@ import {validate} from 'class-validator';
 import {NextFunction, Request, Response} from 'express';
 import {Task} from '../entity/todolist/Task';
 import {Todo} from '../entity/todolist/Todo';
-import TodoRepository from '../repositories/TodoRepository';
+import {TodoRepository} from '../repositories/TodoRepository';
 import Utils from './Utils';
 import {User} from '../entity/user/User';
 import {
+  IMultiDeleteRequest,
   IUpdateTodoRequest,
   IUpsertTodoRequest,
 } from '../shared/api-request-interfaces';
 import {toTodoResponse} from '../transformers/transformers';
-import GroupRepository from '../repositories/GroupRepository';
+import {GroupRepository} from '../repositories/GroupRepository';
+import {In} from 'typeorm';
 
 class TodoController {
   public static upsertTodo = async (
@@ -41,10 +43,9 @@ class TodoController {
 
       if (id) {
         // Get the todos from database
-        const todoRepository = new TodoRepository();
         let todoToUpdate: Todo;
         try {
-          todoToUpdate = await todoRepository.getOneById(id, connectedUser.id);
+          todoToUpdate = await TodoRepository.getOneById(id, connectedUser.id);
         } catch (e) {
           console.error(e);
           res.status(404).send('Todo not found');
@@ -72,9 +73,8 @@ class TodoController {
             todoToUpdate.group = null;
           } else {
             let groupFound = null;
-            const groupRepository = new GroupRepository();
             try {
-              groupFound = await groupRepository.getOneById(
+              groupFound = await GroupRepository.getOneById(
                 group,
                 connectedUser.id,
               );
@@ -118,7 +118,7 @@ class TodoController {
             return;
           }
 
-          await todoRepository.save(todoToUpdate);
+          await TodoRepository.save(todoToUpdate);
           res.status(200).send(toTodoResponse(todoToUpdate));
           return;
         }
@@ -137,9 +137,8 @@ class TodoController {
         return;
       }
 
-      const todoRepository = new TodoRepository();
       try {
-        await todoRepository.save(todoToCreate);
+        await TodoRepository.save(todoToCreate);
       } catch (e) {
         res.status(400).send('Missing param');
         return;
@@ -185,10 +184,9 @@ class TodoController {
       const id = req.params.id;
 
       // Get the todos from database
-      const todoRepository = new TodoRepository();
       let todoFound: Todo;
       try {
-        todoFound = await todoRepository.getOneById(id, connectedUser.id);
+        todoFound = await TodoRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         // If not found, send a 404 response
         res.status(404).send('Todo not found');
@@ -214,9 +212,8 @@ class TodoController {
           todoFound.group = null;
         } else {
           let groupFound = null;
-          const groupRepository = new GroupRepository();
           try {
-            groupFound = await groupRepository.getOneById(
+            groupFound = await GroupRepository.getOneById(
               group,
               connectedUser.id,
             );
@@ -260,7 +257,7 @@ class TodoController {
         res.status(400).send(errors);
         return;
       }
-      await todoRepository.save(todoFound);
+      await TodoRepository.save(todoFound);
       res.status(200).send(toTodoResponse(todoFound));
     } catch (e) {
       next(e);
@@ -288,9 +285,8 @@ class TodoController {
       }
 
       // Get todos from database
-      const todoRepository = new TodoRepository();
       try {
-        const todos = await todoRepository.findAll(connectedUser.id);
+        const todos = await TodoRepository.findAll(connectedUser.id);
         // Send the todos object
         res.send(todos.map(toTodoResponse));
         return;
@@ -332,11 +328,9 @@ class TodoController {
       const id: number = +req.params.id;
 
       // Get the todos from database
-      const todoRepository = new TodoRepository();
-
       let todoFound;
       try {
-        todoFound = await todoRepository.getOneById(id, connectedUser.id);
+        todoFound = await TodoRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         console.error(error);
         res.status(404).send('Todo not found');
@@ -383,10 +377,9 @@ class TodoController {
       // Get the ID from the url
       const id = req.params.id;
 
-      const todoRepository = new TodoRepository();
       let todoFound: Todo;
       try {
-        todoFound = await todoRepository.getOneById(id, connectedUser.id);
+        todoFound = await TodoRepository.getOneById(id, connectedUser.id);
       } catch (error) {
         res.status(404).send('Todo not found');
         return;
@@ -399,10 +392,62 @@ class TodoController {
         return;
       }
 
-      await todoRepository.softDelete(todoFound.id);
+      await TodoRepository.softDelete(todoFound.id);
 
       // After all send a 204 (no content, but accepted) response
       res.status(204).send();
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  public static multiDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      console.info('Delete Todos endpoint has been called');
+
+      // Get the connected user
+      let connectedUser: User;
+      try {
+        connectedUser = await Utils.getUserConnected(res);
+        console.info(
+          `The user ${connectedUser.username} is known and connected`,
+        );
+      } catch (e) {
+        res.status(401).send();
+        return;
+      }
+
+      // Get values from the body
+      const idsReq = req.body as IMultiDeleteRequest[];
+
+      const ids = idsReq.map(item => item.id);
+
+      // Get the todos from database
+      let todosFound: Todo[];
+      try {
+        todosFound = await TodoRepository.findBy([
+          {
+            id: In(ids),
+            owner: {id: connectedUser.id},
+          },
+          {
+            id: In(ids),
+            group: {users: {id: connectedUser.id}},
+          },
+        ]);
+        await TodoRepository.softDelete(todosFound.map(todo => todo.id));
+        res.status(204).send();
+        return;
+      } catch (error) {
+        console.error(error);
+        // If not found, send a 404 response
+        res.status(404).send('Todo not found');
+        return;
+      }
     } catch (e) {
       next(e);
     }

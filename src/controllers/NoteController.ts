@@ -4,7 +4,7 @@ import {Note} from '../entity/notes/Note';
 import Utils from './Utils';
 import {User} from '../entity/user/User';
 import {
-  IDeleteNotesRequest,
+  IMultiDeleteRequest,
   IUpdateNoteRequest,
   IUpsertNoteRequest,
 } from '../shared/api-request-interfaces';
@@ -105,22 +105,25 @@ class NoteController {
       noteToCreate.name = name;
       noteToCreate.data = data;
       noteToCreate.owner = connectedUser;
+      console.log(group);
 
-      if (group === null || group <= 0) {
-        noteToCreate.group = null;
-      } else {
-        let groupFound = null;
-        try {
-          groupFound = await GroupRepository.getOneById(
-            group,
-            connectedUser.id,
-          );
-        } catch (error) {
-          console.error(error);
-          res.status(404).send('Group not found');
-          return;
+      if (undefined) {
+        if (group === null || group <= 0) {
+          noteToCreate.group = null;
+        } else {
+          let groupFound = null;
+          try {
+            groupFound = await GroupRepository.getOneById(
+              group,
+              connectedUser.id,
+            );
+          } catch (error) {
+            console.error(error);
+            res.status(404).send('Group not found');
+            return;
+          }
+          noteToCreate.group = groupFound;
         }
-        noteToCreate.group = groupFound;
       }
 
       // Validade if the parameters are ok
@@ -393,11 +396,9 @@ class NoteController {
       }
 
       // Get values from the body
-      const idsReq = req.body as IDeleteNotesRequest[];
+      const idsReq = req.body as IMultiDeleteRequest[];
 
       const ids = idsReq.map(item => item.id);
-
-      console.log(ids);
 
       // Get the notes from database
       let notesFound: Note[];

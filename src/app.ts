@@ -81,7 +81,6 @@ function errorHandler(
  * @param next
  */
 function logger(err: Error, req: Request, res: Response, next: NextFunction) {
-  console.log('test');
   console.debug(req);
   console.debug(req.path);
   console.debug(req.body);

@@ -75,6 +75,6 @@ export interface IUpdateNoteRequest {
   group?: number;
 }
 
-export interface IDeleteNotesRequest {
+export interface IMultiDeleteRequest {
   id: number;
 }
