@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import {Act} from './Act';
 import {Vehicle} from './Vehicle';
+import AbstractEntity from '../abstract/AbstractEntity';
+import {IServicingRequest} from '../../shared/api-request-interfaces';
 
 /**
  * @swagger
@@ -45,24 +47,25 @@ import {Vehicle} from './Vehicle';
  *           description: The servicing's update date
  */
 @Entity()
-export class Servicing {
-  @PrimaryGeneratedColumn()
-  public id: number;
-
+export class Servicing extends AbstractEntity {
   @Column()
   public kilometer: number;
 
   @ManyToOne(() => Vehicle, vehicle => vehicle.servicings)
   public vehicle: Vehicle;
 
-  @OneToMany(() => Act, act => act.servicing)
+  @OneToMany(() => Act, act => act.servicing, {
+    cascade: true,
+  })
   public acts: Act[];
 
-  @Column()
-  @CreateDateColumn()
-  public createdAt: Date;
-
-  @Column()
-  @UpdateDateColumn()
-  public updatedAt: Date;
+  constructor(servicingRequest?: IServicingRequest) {
+    if (servicingRequest) {
+      super(servicingRequest.id);
+      this.kilometer = servicingRequest.kilometer;
+      this.acts = servicingRequest.acts.map(item => new Act(item));
+    } else {
+      super();
+    }
+  }
 }

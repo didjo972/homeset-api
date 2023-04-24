@@ -5,13 +5,13 @@ import Utils from './Utils';
 import {User} from '../entity/user/User';
 import {
   IMultiDeleteRequest,
-  IUpdateNoteRequest,
-  IUpsertNoteRequest,
+  INoteRequest,
 } from '../shared/api-request-interfaces';
 import {toNoteResponse} from '../transformers/transformers';
 import {GroupRepository} from '../repositories/GroupRepository';
 import {NoteRepository} from '../repositories/NoteRepository';
 import {In} from 'typeorm';
+import {selectGroup} from './Helpers';
 
 class NoteController {
   public static upsertNote = async (
@@ -38,7 +38,7 @@ class NoteController {
       }
 
       // Get parameters from the body
-      const {id, name, data, group} = req.body as IUpsertNoteRequest;
+      const {id, name, data, group} = req.body as INoteRequest;
 
       if (id) {
         // Get the notes from database
@@ -72,21 +72,14 @@ class NoteController {
             noteToUpdate.data = data;
           }
 
-          if (group === null || group <= 0) {
-            noteToUpdate.group = null;
-          } else {
-            let groupFound = null;
+          if (group !== undefined) {
             try {
-              groupFound = await GroupRepository.getOneById(
-                group,
-                connectedUser.id,
-              );
+              noteToUpdate.group = await selectGroup(group, connectedUser.id);
             } catch (error) {
               console.error(error);
               res.status(404).send('Group not found');
               return;
             }
-            noteToUpdate.group = groupFound;
           }
 
           const errors = await validate(noteToUpdate);
@@ -105,24 +98,14 @@ class NoteController {
       noteToCreate.name = name;
       noteToCreate.data = data;
       noteToCreate.owner = connectedUser;
-      console.log(group);
 
       if (undefined) {
-        if (group === null || group <= 0) {
-          noteToCreate.group = null;
-        } else {
-          let groupFound = null;
-          try {
-            groupFound = await GroupRepository.getOneById(
-              group,
-              connectedUser.id,
-            );
-          } catch (error) {
-            console.error(error);
-            res.status(404).send('Group not found');
-            return;
-          }
-          noteToCreate.group = groupFound;
+        try {
+          noteToCreate.group = await selectGroup(group, connectedUser.id);
+        } catch (error) {
+          console.error(error);
+          res.status(404).send('Group not found');
+          return;
         }
       }
 
@@ -174,7 +157,7 @@ class NoteController {
       }
 
       // Get values from the body
-      const {name, data, group} = req.body as IUpdateNoteRequest;
+      const {name, data, group} = req.body as INoteRequest;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -204,21 +187,12 @@ class NoteController {
       }
 
       if (group !== undefined) {
-        if (group === null || group <= 0) {
-          noteFound.group = null;
-        } else {
-          let groupFound = null;
-          try {
-            groupFound = await GroupRepository.getOneById(
-              group,
-              connectedUser.id,
-            );
-          } catch (error) {
-            console.error(error);
-            res.status(404).send('Group not found');
-            return;
-          }
-          noteFound.group = groupFound;
+        try {
+          noteFound.group = await selectGroup(group, connectedUser.id);
+        } catch (error) {
+          console.error(error);
+          res.status(404).send('Group not found');
+          return;
         }
       }
 
@@ -261,7 +235,7 @@ class NoteController {
       // Get notes from database
       try {
         const notes = await NoteRepository.findAll(connectedUser.id);
-        // Send the todos object
+        // Send the notes object
         res.send(notes.map(toNoteResponse));
         return;
       } catch (e) {
@@ -413,6 +387,7 @@ class NoteController {
             group: {users: {id: connectedUser.id}},
           },
         ]);
+        // TODO Check if we should call hasGrantAccess
         await NoteRepository.softDelete(notesFound.map(note => note.id));
         res.status(204).send();
         return;

@@ -1,5 +1,5 @@
 import {RequestHandler, Router} from 'express';
-import UserController from '../controllers/UserController';
+import UserController from '../usescases/UserController';
 import {checkJwt, checkRole} from '../middlewares/jwt';
 
 /**

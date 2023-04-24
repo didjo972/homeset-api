@@ -1,9 +1,10 @@
 import {validate} from 'class-validator';
 import {NextFunction, Request, Response} from 'express';
-import {Like, getRepository} from 'typeorm';
+import {Like} from 'typeorm';
 import {User} from '../entity/user/User';
 import {IEditUserRequest} from '../shared/api-request-interfaces';
 import {toUserResponse} from '../transformers/transformers';
+import {UserRepository} from '../repositories/UserRepository';
 
 class UserController {
   public static listAll = async (
@@ -15,8 +16,7 @@ class UserController {
       console.info('Get all Users endpoint has been called with');
 
       // Get users from database
-      const userRepository = getRepository(User);
-      const users = await userRepository.find({
+      const users = await UserRepository.find({
         select: ['id', 'username', 'role'], // We dont want to send the passwords on response
       });
 
@@ -43,11 +43,11 @@ class UserController {
       const id: number = +req.params.id;
 
       // Get the user from database
-      const userRepository = getRepository(User);
       try {
-        const user = await userRepository.findOneOrFail(id, {
-          select: ['id', 'username', 'role', 'phone'], // We dont want to send the password on response
-        });
+        const user = await UserRepository.findOneOrFail({
+          where: {id},
+          select: ['id', 'username', 'role', 'phone'],
+        }); // We dont want to send the password on response
         res.send(user);
       } catch (error) {
         console.error(error);
@@ -79,9 +79,8 @@ class UserController {
       }
 
       // Get the user from database
-      const userRepository = getRepository(User);
       try {
-        const users = await userRepository.find({
+        const users = await UserRepository.find({
           where: {username: Like(`%${search}%`)},
           select: ['id', 'username', 'role', 'phone'],
         });
@@ -115,10 +114,9 @@ class UserController {
       const {username, role, phone} = req.body as IEditUserRequest;
 
       // Try to find user on database
-      const userRepository = getRepository(User);
       let user;
       try {
-        user = await userRepository.findOneOrFail(id);
+        user = await UserRepository.findOneOrFail({where: {id: +id}});
       } catch (error) {
         console.error(error);
         // If not found, send a 404 response
@@ -146,7 +144,7 @@ class UserController {
 
       // Try to safe, if fails, that means username already in use
       try {
-        await userRepository.save(user);
+        await UserRepository.save(user);
       } catch (e) {
         res.status(409).send('username already in use');
         return;
@@ -173,15 +171,14 @@ class UserController {
       // Get the ID from the url
       const id = req.params.id;
 
-      const userRepository = getRepository(User);
       let user: User;
       try {
-        user = await userRepository.findOneOrFail(id);
+        user = await UserRepository.findOneOrFail({where: {id: +id}});
       } catch (error) {
         res.status(404).send('User not found');
         return;
       }
-      await userRepository.delete(user.id);
+      await UserRepository.delete(user.id);
 
       // After all send a 204 (no content, but accepted) response
       res.status(204).send();

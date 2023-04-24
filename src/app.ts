@@ -80,13 +80,18 @@ function errorHandler(
  * @param res
  * @param next
  */
-function logger(err: Error, req: Request, res: Response, next: NextFunction) {
-  console.debug(req);
-  console.debug(req.path);
-  console.debug(req.body);
-  console.debug(req.params);
-  // next();
-}
+// function requestLogger(
+//   err: Error,
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) {
+//   console.info(req);
+//   console.info(req.path);
+//   console.info(req.body);
+//   console.info(req.params);
+//   next();
+// }
 
 // Call middlewares
 app.use(cors());
@@ -99,7 +104,7 @@ app.use(
   swaggerUI.setup(swaggerSpec, {explorer: true}),
 );
 
-app.use(logger);
+// app.use(requestLogger);
 
 // Set all routes from routes folder
 app.use('/', routes);

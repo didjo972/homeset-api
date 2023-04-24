@@ -1,40 +1,16 @@
-export interface ILoginRequest {
-  email: string;
-  password: string;
+/****************************************************************************************************
+ * COMMON REQUEST INTERFACES
+ ****************************************************************************************************/
+export interface IMultiDeleteRequest {
+  id: number;
 }
 
-export interface IChangePasswordRequest {
-  oldPassword: string;
-  newPassword: string;
-}
+/****************************************************************************************************
+ * ACCOUNT REQUEST INTERFACES
+ ****************************************************************************************************/
 
-export interface ICreateUserRequest {
-  username: string;
-  email: string;
-  password: string;
-}
-
-export interface IResetPasswordRequest {
-  email: string;
-}
-
-export interface IUpsertTodoRequest {
-  id?: number;
-  name: string;
-  group?: number;
-  tasks?: ICreateTaskRequest[];
-}
-
-export interface ICreateTaskRequest {
-  id?: number;
-  description?: string;
-  status?: boolean;
-}
-
-export interface IUpdateTodoRequest {
-  name?: string;
-  tasks?: ICreateTaskRequest[];
-  group?: number;
+export interface IUserRequest {
+  id: number;
 }
 
 export interface IEditUserRequest {
@@ -47,13 +23,35 @@ export interface IUpsertUserRequest {
   idMember: number;
 }
 
-export interface IUpsertGroupRequest {
-  id?: number;
-  name: string;
+export interface ICreateUserRequest {
+  username: string;
+  email: string;
+  password: string;
 }
 
-export interface IUserRequest {
-  id: number;
+export interface IResetPasswordRequest {
+  email: string;
+}
+
+/****************************************************************************************************
+ * AUTHENTICATION REQUEST INTERFACES
+ ****************************************************************************************************/
+export interface ILoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface IChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+}
+
+/****************************************************************************************************
+ * GROUP REQUEST INTERFACES
+ ****************************************************************************************************/
+export interface IUpsertGroupRequest {
+  id?: number;
+  name?: string;
 }
 
 export interface IUpdateGroupRequest {
@@ -62,19 +60,62 @@ export interface IUpdateGroupRequest {
   owner?: IUserRequest;
 }
 
-export interface IUpsertNoteRequest {
-  id: number;
-  name: string;
-  data?: string;
+/****************************************************************************************************
+ * TODO REQUEST INTERFACES
+ ****************************************************************************************************/
+export interface ITaskRequest {
+  id?: number;
+  description?: string;
+  status?: boolean;
+}
+
+export interface ITodoRequest {
+  id?: number;
+  name?: string;
+  tasks?: ITaskRequest[];
   group?: number;
 }
 
-export interface IUpdateNoteRequest {
+export interface INoteRequest {
+  id?: number;
   name?: string;
   data?: string;
   group?: number;
 }
 
-export interface IMultiDeleteRequest {
-  id: number;
+/****************************************************************************************************
+ * RECIPE REQUEST INTERFACES
+ ****************************************************************************************************/
+export interface ICookingRecipeRequest {
+  id?: number;
+  name?: string;
+  description?: string;
+  preparationTime?: number;
+  nbPerson?: number;
+  recipe?: string;
+  groups?: number[];
+}
+
+/****************************************************************************************************
+ * VEHICLE REQUEST INTERFACES
+ ****************************************************************************************************/
+export interface IVehicleRequest {
+  id?: number;
+  brand?: string;
+  model?: string;
+  identification?: string;
+  group?: number;
+  servicings?: IServicingRequest[];
+}
+
+export interface IServicingRequest {
+  id?: number;
+  kilometer?: number;
+  acts?: IActRequest[];
+}
+
+export interface IActRequest {
+  id?: number;
+  description?: string;
+  comment?: string;
 }

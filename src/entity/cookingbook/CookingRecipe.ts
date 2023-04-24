@@ -50,7 +50,14 @@ export class CookingRecipe extends AbstractEntity {
   public description: string;
 
   @Column()
+  public preparationTime: number;
+
+  @Column()
   public nbPerson: number;
+
+  // TODO Replace by Ingredients and Elements
+  @Column()
+  public recipe: string;
 
   @ManyToOne(() => User, owner => owner.cookingRecipes)
   public owner: User;

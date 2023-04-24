@@ -56,9 +56,11 @@ export class Vehicle extends AbstractBusiness {
   @Column()
   public identification: string;
 
-  @OneToMany(() => Servicing, servicing => servicing.vehicle)
+  @OneToMany(() => Servicing, servicing => servicing.vehicle, {
+    cascade: true,
+  })
   public servicings: Servicing[];
 
-  @ManyToOne(() => Group)
+  @ManyToOne(() => Group, group => group.todos, {nullable: true})
   public group: Group;
 }

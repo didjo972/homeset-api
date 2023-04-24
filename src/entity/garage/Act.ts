@@ -7,6 +7,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import {Servicing} from './Servicing';
+import AbstractEntity from '../abstract/AbstractEntity';
+import {IActRequest} from '../../shared/api-request-interfaces';
 
 /**
  * @swagger
@@ -38,21 +40,23 @@ import {Servicing} from './Servicing';
  *           description: The act's update date
  */
 @Entity()
-export class Act {
-  @PrimaryGeneratedColumn()
-  public id: number;
-
+export class Act extends AbstractEntity {
   @Column()
   public description: string;
 
-  @ManyToOne(() => Servicing, servicing => servicing.acts)
+  @Column({nullable: true})
+  public comment: string;
+
+  @ManyToOne(() => Servicing, servicing => servicing.acts, {lazy: true})
   public servicing: Servicing;
 
-  @Column()
-  @CreateDateColumn()
-  public createdAt: Date;
-
-  @Column()
-  @UpdateDateColumn()
-  public updatedAt: Date;
+  constructor(actRequest?: IActRequest) {
+    if (actRequest) {
+      super(actRequest.id);
+      this.description = actRequest.description;
+      this.comment = actRequest.comment;
+    } else {
+      super();
+    }
+  }
 }

@@ -6,15 +6,34 @@ import {TodoRepository} from '../repositories/TodoRepository';
 import Utils from './Utils';
 import {User} from '../entity/user/User';
 import {
+  ITaskRequest,
   IMultiDeleteRequest,
-  IUpdateTodoRequest,
-  IUpsertTodoRequest,
+  ITodoRequest,
 } from '../shared/api-request-interfaces';
 import {toTodoResponse} from '../transformers/transformers';
-import {GroupRepository} from '../repositories/GroupRepository';
 import {In} from 'typeorm';
+import {matchRequestSubItemsInItemEntity, selectGroup} from './Helpers';
 
 class TodoController {
+  private static matchTask = (todo: Todo, taskReq: Task): Task | undefined => {
+    if (taskReq.id) {
+      const taskFound = todo.tasks.find(item => item.id === taskReq.id);
+      if (taskFound) {
+        if (taskReq.description) {
+          taskFound.description = taskReq.description;
+        }
+        if (taskReq.status !== undefined) {
+          taskFound.status = taskReq.status;
+        }
+        return taskFound;
+      }
+    }
+
+    if (taskReq.description) {
+      return new Task(taskReq);
+    }
+  };
+
   public static upsertTodo = async (
     req: Request,
     res: Response,
@@ -39,7 +58,7 @@ class TodoController {
       }
 
       // Get parameters from the body
-      const {id, name, group, tasks = []} = req.body as IUpsertTodoRequest;
+      const {id, name, group, tasks = []} = req.body as ITodoRequest;
 
       if (id) {
         // Get the todos from database
@@ -69,47 +88,22 @@ class TodoController {
             todoToUpdate.name = name;
           }
 
-          if (group === null || group <= 0) {
-            todoToUpdate.group = null;
-          } else {
-            let groupFound = null;
+          if (group !== undefined) {
             try {
-              groupFound = await GroupRepository.getOneById(
-                group,
-                connectedUser.id,
-              );
+              todoToUpdate.group = await selectGroup(group, connectedUser.id);
             } catch (error) {
               console.error(error);
               res.status(404).send('Group not found');
               return;
             }
-            todoToUpdate.group = groupFound;
           }
 
           if (tasks && tasks.length > 0) {
-            const updatedTasks = tasks.map(taskReq => {
-              if (taskReq.id) {
-                const taskFound = todoToUpdate.tasks.find(
-                  task => task.id === taskReq.id,
-                );
-                if (taskFound) {
-                  if (taskReq.description) {
-                    taskFound.description = taskReq.description;
-                  }
-                  if (taskReq.status !== undefined) {
-                    taskFound.status = taskReq.status;
-                  }
-                  return taskFound;
-                } else {
-                  console.error(`No task with id: ${taskReq.id} found.`);
-                }
-              }
-
-              if (taskReq.description) {
-                return new Task(taskReq);
-              }
-            });
-            todoToUpdate.tasks = updatedTasks;
+            todoToUpdate.tasks = matchRequestSubItemsInItemEntity<
+              Todo,
+              ITaskRequest,
+              Task
+            >(todoToUpdate, tasks, TodoController.matchTask);
           }
 
           const errors = await validate(todoToUpdate);
@@ -178,7 +172,7 @@ class TodoController {
       }
 
       // Get values from the body
-      const {name, tasks, group} = req.body as IUpdateTodoRequest;
+      const {name, tasks, group} = req.body as ITodoRequest;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -208,48 +202,21 @@ class TodoController {
       }
 
       if (group !== undefined) {
-        if (group === null || group <= 0) {
-          todoFound.group = null;
-        } else {
-          let groupFound = null;
-          try {
-            groupFound = await GroupRepository.getOneById(
-              group,
-              connectedUser.id,
-            );
-          } catch (error) {
-            console.error(error);
-            res.status(404).send('Group not found');
-            return;
-          }
-          todoFound.group = groupFound;
+        try {
+          todoFound.group = await selectGroup(group, connectedUser.id);
+        } catch (error) {
+          console.error(error);
+          res.status(404).send('Group not found');
+          return;
         }
       }
 
       if (tasks && tasks.length >= 0) {
-        const updatedTasks = tasks.map(taskReq => {
-          if (taskReq.id) {
-            const taskFound = todoFound.tasks.find(
-              task => task.id === taskReq.id,
-            );
-            if (taskFound) {
-              if (taskReq.description) {
-                taskFound.description = taskReq.description;
-              }
-              if (taskReq.status !== undefined) {
-                taskFound.status = taskReq.status;
-              }
-              return taskFound;
-            } else {
-              console.error(`No task with id: ${taskReq.id} found.`);
-            }
-          }
-
-          if (taskReq.description) {
-            return new Task(taskReq);
-          }
-        });
-        todoFound.tasks = updatedTasks;
+        todoFound.tasks = matchRequestSubItemsInItemEntity<
+          Todo,
+          ITaskRequest,
+          Task
+        >(todoFound, tasks, TodoController.matchTask);
       }
 
       const errors = await validate(todoFound);

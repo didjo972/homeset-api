@@ -1,5 +1,5 @@
 import {RequestHandler, Router} from 'express';
-import UnauthController from '../controllers/UnauthController';
+import UnauthController from '../usescases/UnauthController';
 
 /**
  * @swagger

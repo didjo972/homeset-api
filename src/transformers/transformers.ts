@@ -1,15 +1,23 @@
 import {
+  IActResponse,
   IGroupResponse,
   INoteResponse,
+  IRecipeResponse,
+  IServicingResponse,
   ITaskResponse,
   ITodoResponse,
   IUserResponse,
+  IVehicleResponse,
 } from '../shared/api-response-interfaces';
 import {Todo} from '../entity/todolist/Todo';
 import {Task} from '../entity/todolist/Task';
 import {User} from '../entity/user/User';
 import {Group} from '../entity/user/Group';
 import {Note} from '../entity/notes/Note';
+import {CookingRecipe} from '../entity/cookingbook/CookingRecipe';
+import {Vehicle} from '../entity/garage/Vehicle';
+import {Servicing} from '../entity/garage/Servicing';
+import {Act} from '../entity/garage/Act';
 
 export const toUserResponse = (user: User, withDate = false): IUserResponse => {
   const userReponse: IUserResponse = {
@@ -83,5 +91,65 @@ export const toNoteResponse = (note: Note): INoteResponse => {
     updatedAt: note.updatedAt,
     owner: note.owner ? toUserResponse(note.owner) : undefined,
     group: note.group ? toGroupResponse(note.group, true) : undefined,
+  };
+};
+
+export const toRecipeResponse = (recipe: CookingRecipe): IRecipeResponse => {
+  return {
+    id: recipe.id,
+    name: recipe.name,
+    description: recipe.description,
+    preparationTime: recipe.preparationTime,
+    nbPerson: recipe.nbPerson,
+    recipe: recipe.recipe,
+    createdAt: recipe.createdAt,
+    updatedAt: recipe.updatedAt,
+    owner: recipe.owner ? toUserResponse(recipe.owner) : undefined,
+    groups: recipe.groups
+      ? recipe.groups.map(item => toGroupResponse(item, true))
+      : undefined,
+  };
+};
+
+export const toActResponse = (act: Act, withDate = false): IActResponse => {
+  const actResponse: IActResponse = {
+    id: act.id,
+    description: act.description,
+    comment: act.comment,
+  };
+  if (withDate) {
+    actResponse.createdAt = act.createdAt;
+    actResponse.updatedAt = act.updatedAt;
+  }
+  return actResponse;
+};
+
+export const toServicingResponse = (
+  servicing: Servicing,
+): IServicingResponse => {
+  return {
+    id: servicing.id,
+    kilometer: servicing.kilometer,
+    acts: servicing.acts
+      ? servicing.acts.map(item => toActResponse(item))
+      : undefined,
+    createdAt: servicing.createdAt,
+    updatedAt: servicing.updatedAt,
+  };
+};
+
+export const toVehicleResponse = (vehicle: Vehicle): IVehicleResponse => {
+  return {
+    id: vehicle.id,
+    brand: vehicle.brand,
+    model: vehicle.model,
+    identification: vehicle.identification,
+    servicings: vehicle.servicings
+      ? vehicle.servicings.map(toServicingResponse)
+      : undefined,
+    createdAt: vehicle.createdAt,
+    updatedAt: vehicle.updatedAt,
+    owner: vehicle.owner ? toUserResponse(vehicle.owner) : undefined,
+    group: vehicle.group ? toGroupResponse(vehicle.group, true) : undefined,
   };
 };

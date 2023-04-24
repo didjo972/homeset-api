@@ -1,6 +1,6 @@
 import {RequestHandler, Router} from 'express';
 import {checkJwt} from '../middlewares/jwt';
-import GroupController from '../controllers/GroupController';
+import GroupController from '../usescases/GroupController';
 
 /**
  * @swagger
@@ -133,5 +133,15 @@ router.patch(
   [checkJwt],
   GroupController.editGroup as RequestHandler,
 );
+
+// Delete one group
+router.delete(
+  '/:id([0-9]+)',
+  [checkJwt],
+  GroupController.deleteGroup as RequestHandler,
+);
+
+// Delete multiple groups
+router.delete('/', [checkJwt], GroupController.multiDelete as RequestHandler);
 
 export default router;

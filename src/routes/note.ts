@@ -1,5 +1,5 @@
 import {RequestHandler, Router} from 'express';
-import NoteController from '../controllers/NoteController';
+import NoteController from '../usescases/NoteController';
 import {checkJwt} from '../middlewares/jwt';
 
 /**

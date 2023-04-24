@@ -4,7 +4,10 @@ import {UniqueIdentifierType} from './BaseRepository';
 import {dataSource} from '../../ormconfig';
 
 export const GroupRepository = dataSource.getRepository(Group).extend({
-  getOneById(id: UniqueIdentifierType, idUser: UniqueIdentifierType): Group {
+  getOneById(
+    id: UniqueIdentifierType,
+    idUser: UniqueIdentifierType,
+  ): Promise<Group> {
     return this.createQueryBuilder('group')
       .leftJoinAndSelect('group.owner', 'owner')
       .leftJoinAndSelect('group.users', 'users')

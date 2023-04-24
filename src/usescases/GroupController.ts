@@ -5,11 +5,13 @@ import Utils from './Utils';
 import {Group} from '../entity/user/Group';
 import {validate} from 'class-validator';
 import {
+  IMultiDeleteRequest,
   IUpdateGroupRequest,
   IUpsertGroupRequest,
 } from '../shared/api-request-interfaces';
 import {dataSource} from '../../ormconfig';
 import {GroupRepository} from '../repositories/GroupRepository';
+import {In} from 'typeorm';
 
 class GroupController {
   public static upsertGroup = async (
@@ -353,6 +355,55 @@ class GroupController {
 
       // After all send a 204 (no content, but accepted) response
       res.status(204).send();
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  public static multiDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      console.info('Delete Groups endpoint has been called');
+
+      // Get the connected user
+      let connectedUser: User;
+      try {
+        connectedUser = await Utils.getUserConnected(res);
+        console.info(
+          `The user ${connectedUser.username} is known and connected`,
+        );
+      } catch (e) {
+        res.status(401).send();
+        return;
+      }
+
+      // Get values from the body
+      const idsReq = req.body as IMultiDeleteRequest[];
+
+      const ids = idsReq.map(item => item.id);
+
+      // Get the groups from database
+      let groupsFound: Group[];
+      try {
+        groupsFound = await GroupRepository.findBy([
+          {
+            id: In(ids),
+            owner: {id: connectedUser.id},
+          },
+        ]);
+        // TODO Check if we should call hasGrantAccess
+        await GroupRepository.softDelete(groupsFound.map(group => group.id));
+        res.status(204).send();
+        return;
+      } catch (error) {
+        console.error(error);
+        // If not found, send a 404 response
+        res.status(404).send('Group not found');
+        return;
+      }
     } catch (e) {
       next(e);
     }

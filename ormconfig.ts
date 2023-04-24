@@ -17,7 +17,7 @@ const AppDataSource = (): DataSource => {
     database: process.env.POSTGRES_DB,
     entities,
     synchronize: true,
-    logging: false,
+    logging: true,
     connectTimeoutMS: 30000,
   });
 };

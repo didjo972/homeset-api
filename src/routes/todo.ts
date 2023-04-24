@@ -1,5 +1,5 @@
 import {RequestHandler, Router} from 'express';
-import TodoController from '../controllers/TodoController';
+import TodoController from '../usescases/TodoController';
 import {checkJwt} from '../middlewares/jwt';
 
 /**
