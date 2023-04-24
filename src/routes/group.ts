@@ -44,7 +44,11 @@ const router = Router();
  *          description: User not authenticated.
  */
 // Create or Update group
-router.post('/', [checkJwt], GroupController.upsertGroup as RequestHandler);
+router.post(
+  '/',
+  [checkJwt],
+  GroupController.upsertGroup as RequestHandler<any>,
+);
 
 /**
  * @swagger
@@ -64,7 +68,7 @@ router.post('/', [checkJwt], GroupController.upsertGroup as RequestHandler);
  *                $ref: "#/components/schemas/Group"
  */
 // Get all groups
-router.get('/', [checkJwt], GroupController.listAll as RequestHandler);
+router.get('/', [checkJwt], GroupController.listAll as RequestHandler<any>);
 
 /**
  * @swagger
@@ -96,7 +100,7 @@ router.get('/', [checkJwt], GroupController.listAll as RequestHandler);
 router.get(
   '/:id([0-9]+)',
   [checkJwt],
-  GroupController.getOneById as RequestHandler,
+  GroupController.getOneById as RequestHandler<any>,
 );
 
 /**
@@ -131,17 +135,21 @@ router.get(
 router.patch(
   '/:id([0-9]+)',
   [checkJwt],
-  GroupController.editGroup as RequestHandler,
+  GroupController.editGroup as RequestHandler<any>,
 );
 
 // Delete one group
 router.delete(
   '/:id([0-9]+)',
   [checkJwt],
-  GroupController.deleteGroup as RequestHandler,
+  GroupController.deleteGroup as RequestHandler<any>,
 );
 
 // Delete multiple groups
-router.delete('/', [checkJwt], GroupController.multiDelete as RequestHandler);
+router.delete(
+  '/',
+  [checkJwt],
+  GroupController.multiDelete as RequestHandler<any>,
+);
 
 export default router;

@@ -44,7 +44,7 @@ const router = Router();
  *          description: User not authenticated.
  */
 // Create or Update todo
-router.post('/', [checkJwt], TodoController.upsertTodo as RequestHandler);
+router.post('/', [checkJwt], TodoController.upsertTodo as RequestHandler<any>);
 
 /**
  * @swagger
@@ -64,7 +64,7 @@ router.post('/', [checkJwt], TodoController.upsertTodo as RequestHandler);
  *                $ref: "#/components/schemas/Todo"
  */
 // Get all todos
-router.get('/', [checkJwt], TodoController.listAll as RequestHandler);
+router.get('/', [checkJwt], TodoController.listAll as RequestHandler<any>);
 
 /**
  * @swagger
@@ -96,7 +96,7 @@ router.get('/', [checkJwt], TodoController.listAll as RequestHandler);
 router.get(
   '/:id([0-9]+)',
   [checkJwt],
-  TodoController.getOneById as RequestHandler,
+  TodoController.getOneById as RequestHandler<any>,
 );
 
 /**
@@ -131,7 +131,7 @@ router.get(
 router.patch(
   '/:id([0-9]+)',
   [checkJwt],
-  TodoController.editTodo as RequestHandler,
+  TodoController.editTodo as RequestHandler<any>,
 );
 
 /**
@@ -160,10 +160,14 @@ router.patch(
 router.delete(
   '/:id([0-9]+)',
   [checkJwt],
-  TodoController.deleteTodo as RequestHandler,
+  TodoController.deleteTodo as RequestHandler<any>,
 );
 
 // Delete multiple notes
-router.delete('/', [checkJwt], TodoController.multiDelete as RequestHandler);
+router.delete(
+  '/',
+  [checkJwt],
+  TodoController.multiDelete as RequestHandler<any>,
+);
 
 export default router;

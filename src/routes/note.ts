@@ -44,7 +44,7 @@ const router = Router();
  *          description: User not authenticated.
  */
 // Create or Update note
-router.post('/', [checkJwt], NoteController.upsertNote as RequestHandler);
+router.post('/', [checkJwt], NoteController.upsertNote as RequestHandler<any>);
 
 /**
  * @swagger
@@ -64,7 +64,7 @@ router.post('/', [checkJwt], NoteController.upsertNote as RequestHandler);
  *                $ref: "#/components/schemas/Note"
  */
 // Get all notes
-router.get('/', [checkJwt], NoteController.listAll as RequestHandler);
+router.get('/', [checkJwt], NoteController.listAll as RequestHandler<any>);
 
 /**
  * @swagger
@@ -96,7 +96,7 @@ router.get('/', [checkJwt], NoteController.listAll as RequestHandler);
 router.get(
   '/:id([0-9]+)',
   [checkJwt],
-  NoteController.getOneById as RequestHandler,
+  NoteController.getOneById as RequestHandler<any>,
 );
 
 /**
@@ -131,7 +131,7 @@ router.get(
 router.patch(
   '/:id([0-9]+)',
   [checkJwt],
-  NoteController.editNote as RequestHandler,
+  NoteController.editNote as RequestHandler<any>,
 );
 
 /**
@@ -160,10 +160,14 @@ router.patch(
 router.delete(
   '/:id([0-9]+)',
   [checkJwt],
-  NoteController.deleteNote as RequestHandler,
+  NoteController.deleteNote as RequestHandler<any>,
 );
 
 // Delete multiple notes
-router.delete('/', [checkJwt], NoteController.multiDelete as RequestHandler);
+router.delete(
+  '/',
+  [checkJwt],
+  NoteController.multiDelete as RequestHandler<any>,
+);
 
 export default router;

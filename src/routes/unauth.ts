@@ -21,7 +21,7 @@ const router = Router();
  *          description: Hello world
  */
 // Get hello world
-router.get('/', UnauthController.helloWorld as RequestHandler);
+router.get('/', UnauthController.helloWorld as RequestHandler<any>);
 
 /**
  * @swagger
@@ -35,7 +35,7 @@ router.get('/', UnauthController.helloWorld as RequestHandler);
  *          description: Ping
  */
 // Ping
-router.get('/ping', UnauthController.ping as RequestHandler);
+router.get('/ping', UnauthController.ping as RequestHandler<any>);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ router.get('/ping', UnauthController.ping as RequestHandler);
  *                      $ref: "#/components/schemas/User"
  */
 // Create an account
-router.post('/createAccount', UnauthController.newUser as RequestHandler);
+router.post('/createAccount', UnauthController.newUser as RequestHandler<any>);
 
 /**
  * @swagger
@@ -83,6 +83,9 @@ router.post('/createAccount', UnauthController.newUser as RequestHandler);
  *          description: The request to reset the mail has been sent
  */
 // Reset password
-router.post('/resetPassword', UnauthController.resetPassword as RequestHandler);
+router.post(
+  '/resetPassword',
+  UnauthController.resetPassword as RequestHandler<any>,
+);
 
 export default router;

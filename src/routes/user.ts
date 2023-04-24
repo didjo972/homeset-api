@@ -34,13 +34,13 @@ const router = Router();
 router.get(
   '/',
   [checkJwt, checkRole(['ADMIN'])],
-  UserController.listAll as RequestHandler,
+  UserController.listAll as RequestHandler<any>,
 );
 
 router.get(
   '/search',
   [checkJwt],
-  UserController.findsByUsername as RequestHandler,
+  UserController.findsByUsername as RequestHandler<any>,
 );
 
 /**
@@ -74,7 +74,7 @@ router.get(
 router.get(
   '/:id([0-9]+)',
   [checkJwt],
-  UserController.getOneById as RequestHandler,
+  UserController.getOneById as RequestHandler<any>,
 );
 
 /**
@@ -109,7 +109,7 @@ router.get(
 router.patch(
   '/:id([0-9]+)',
   [checkJwt, checkRole(['ADMIN'])],
-  UserController.editUser as RequestHandler,
+  UserController.editUser as RequestHandler<any>,
 );
 
 /**
@@ -138,7 +138,7 @@ router.patch(
 router.delete(
   '/:id([0-9]+)',
   [checkJwt, checkRole(['ADMIN'])],
-  UserController.deleteUser as RequestHandler,
+  UserController.deleteUser as RequestHandler<any>,
 );
 
 export default router;
