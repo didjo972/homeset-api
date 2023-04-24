@@ -4,7 +4,10 @@ import {UniqueIdentifierType} from './BaseRepository';
 import {dataSource} from '../../ormconfig';
 
 export const TodoRepository = dataSource.getRepository(Todo).extend({
-  getOneById(id: UniqueIdentifierType, idUser: UniqueIdentifierType): Todo {
+  getOneById(
+    id: UniqueIdentifierType,
+    idUser: UniqueIdentifierType,
+  ): Promise<Todo> {
     return this.createQueryBuilder('todo')
       .leftJoinAndSelect('todo.tasks', 'task')
       .leftJoinAndSelect('todo.owner', 'owner')
@@ -35,7 +38,7 @@ export const TodoRepository = dataSource.getRepository(Todo).extend({
       .addOrderBy('task.status', 'ASC')
       .getOneOrFail();
   },
-  findAll(idUser: UniqueIdentifierType): Todo[] {
+  findAll(idUser: UniqueIdentifierType): Promise<Todo[]> {
     return this.createQueryBuilder('todo')
       .leftJoinAndSelect('todo.tasks', 'task')
       .leftJoinAndSelect('todo.owner', 'owner')

@@ -15,8 +15,8 @@ export const selectGroup = async (
 export const matchRequestSubItemsInItemEntity = <T, G, R>(
   item: T,
   subItem: G[],
-  findFunc: (t: T, g: G) => R | undefined,
-): R[] => {
+  findFunc: (t: T, g: G) => Promise<R | undefined>,
+): Promise<R>[] => {
   return subItem.map(it => {
     const res = findFunc(item, it);
     if (res !== undefined) {

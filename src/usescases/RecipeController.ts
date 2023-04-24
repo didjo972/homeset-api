@@ -14,14 +14,14 @@ import {toRecipeResponse} from '../transformers/transformers';
 
 class CookingRecipeController {
   public static upsertRecipe = async (
-    req: Request,
+    req: Request<any, any, ICookingRecipeRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Create or Update Recipe endpoint has been called with: ' +
-          req.body.toString(),
+        'Create or Update Recipe endpoint has been called with: %s',
+        req.body.toString(),
       );
 
       // Get the connected user
@@ -38,7 +38,7 @@ class CookingRecipeController {
 
       // Get parameters from the body
       const {id, name, description, preparationTime, nbPerson, recipe, groups} =
-        req.body as ICookingRecipeRequest;
+        req.body;
 
       if (id) {
         // Get the cooking recipes from database
@@ -54,7 +54,7 @@ class CookingRecipeController {
         }
 
         if (recipeToUpdate) {
-          console.info('A recipe has been found: ' + recipeToUpdate.id);
+          console.info('A recipe has been found: %d', recipeToUpdate.id);
 
           // Check if the user can edit this group
           if (
@@ -186,16 +186,15 @@ class CookingRecipeController {
   };
 
   public static editRecipe = async (
-    req: Request,
+    req: Request<{id: number}, any, ICookingRecipeRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Edit Recipe endpoint has been called with: ' +
-          req.body.toString() +
-          ' and path param ' +
-          req.params.id,
+        'Edit Recipe endpoint has been called with: %s and path param = %d',
+        req.body.toString(),
+        req.params.id,
       );
 
       // Get the connected user
@@ -212,7 +211,7 @@ class CookingRecipeController {
 
       // Get values from the body
       const {name, description, preparationTime, nbPerson, recipe, groups} =
-        req.body as ICookingRecipeRequest;
+        req.body;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -230,7 +229,7 @@ class CookingRecipeController {
         return;
       }
 
-      console.info('A recipe has been found: ' + recipeFound.id);
+      console.info('A recipe has been found: %d', recipeFound.id);
 
       // Check if the user can edit this recipe
       if (!Utils.hasGrantAccess<CookingRecipe>(connectedUser, recipeFound)) {
@@ -334,15 +333,14 @@ class CookingRecipeController {
   };
 
   public static getOneById = async (
-    req: Request,
+    req: Request<{id: number}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Get one Recipe endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Get one Recipe endpoint has been called with: path param = %d',
+        req.params.id,
       );
 
       // Get the connected user
@@ -358,7 +356,7 @@ class CookingRecipeController {
       }
 
       // Get the ID from the url
-      const id: number = +req.params.id;
+      const id = req.params.id;
 
       // Get the recipes from database
       let recipeFound;
@@ -387,15 +385,14 @@ class CookingRecipeController {
   };
 
   public static deleteRecipe = async (
-    req: Request,
+    req: Request<{id: number}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Delete a Recipe endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Delete a Recipe endpoint has been called with: path param = %d',
+        req.params.id,
       );
 
       // Get the connected user
@@ -443,7 +440,7 @@ class CookingRecipeController {
   };
 
   public static multiDelete = async (
-    req: Request,
+    req: Request<any, any, IMultiDeleteRequest[]>,
     res: Response,
     next: NextFunction,
   ) => {
@@ -463,7 +460,7 @@ class CookingRecipeController {
       }
 
       // Get values from the body
-      const idsReq = req.body as IMultiDeleteRequest[];
+      const idsReq = req.body;
 
       const ids = idsReq.map(item => item.id);
 

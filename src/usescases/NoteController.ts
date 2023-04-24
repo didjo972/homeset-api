@@ -8,21 +8,20 @@ import {
   INoteRequest,
 } from '../shared/api-request-interfaces';
 import {toNoteResponse} from '../transformers/transformers';
-import {GroupRepository} from '../repositories/GroupRepository';
 import {NoteRepository} from '../repositories/NoteRepository';
 import {In} from 'typeorm';
 import {selectGroup} from './Helpers';
 
 class NoteController {
   public static upsertNote = async (
-    req: Request,
+    req: Request<any, any, INoteRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Create or Update Note endpoint has been called with: ' +
-          req.body.toString(),
+        'Create or Update Note endpoint has been called with: %s',
+        req.body.toString(),
       );
 
       // Get the connected user
@@ -38,7 +37,7 @@ class NoteController {
       }
 
       // Get parameters from the body
-      const {id, name, data, group} = req.body as INoteRequest;
+      const {id, name, data, group} = req.body;
 
       if (id) {
         // Get the notes from database
@@ -52,7 +51,7 @@ class NoteController {
         }
 
         if (noteToUpdate) {
-          console.info('A note has been found: ' + noteToUpdate.id);
+          console.info('A note has been found: %d', noteToUpdate.id);
 
           // Check if the user can edit this note
           if (!Utils.hasGrantAccess<Note>(connectedUser, noteToUpdate)) {
@@ -132,16 +131,15 @@ class NoteController {
   };
 
   public static editNote = async (
-    req: Request,
+    req: Request<{id: number}, any, INoteRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Edit Note endpoint has been called with: ' +
-          req.body.toString() +
-          ' and path param ' +
-          req.params.id,
+        'Edit Note endpoint has been called with: %s and path param %d',
+        req.body.toString(),
+        req.params.id,
       );
 
       // Get the connected user
@@ -157,7 +155,7 @@ class NoteController {
       }
 
       // Get values from the body
-      const {name, data, group} = req.body as INoteRequest;
+      const {name, data, group} = req.body;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -172,7 +170,7 @@ class NoteController {
         return;
       }
 
-      console.info('A note has been found: ' + noteFound.id);
+      console.info('A note has been found: %d', noteFound.id);
 
       // Check if the user can edit this note
       if (!Utils.hasGrantAccess<Note>(connectedUser, noteFound)) {
@@ -249,15 +247,14 @@ class NoteController {
   };
 
   public static getOneById = async (
-    req: Request,
+    req: Request<{id: number}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Get one Note endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Get one Note endpoint has been called with: path param %d',
+        req.params.id,
       );
 
       // Get the connected user
@@ -273,7 +270,7 @@ class NoteController {
       }
 
       // Get the ID from the url
-      const id: number = +req.params.id;
+      const id = req.params.id;
 
       // Get the notes from database
       let noteFound;
@@ -299,15 +296,14 @@ class NoteController {
   };
 
   public static deleteNote = async (
-    req: Request,
+    req: Request<{id: number}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Delete a Note endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Delete a Note endpoint has been called with: path param %d',
+        req.params.id,
       );
 
       // Get the connected user
@@ -350,7 +346,7 @@ class NoteController {
   };
 
   public static multiDelete = async (
-    req: Request,
+    req: Request<any, any, IMultiDeleteRequest[]>,
     res: Response,
     next: NextFunction,
   ) => {
@@ -370,7 +366,7 @@ class NoteController {
       }
 
       // Get values from the body
-      const idsReq = req.body as IMultiDeleteRequest[];
+      const idsReq = req.body;
 
       const ids = idsReq.map(item => item.id);
 

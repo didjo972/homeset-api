@@ -15,14 +15,14 @@ import {In} from 'typeorm';
 
 class GroupController {
   public static upsertGroup = async (
-    req: Request,
+    req: Request<any, any, IUpsertGroupRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Create or Update Group endpoint has been called with: ' +
-          req.body.toString(),
+        'Create or Update Group endpoint has been called with: %s',
+        req.body.toString(),
       );
 
       // Get the connected user
@@ -38,7 +38,7 @@ class GroupController {
       }
 
       // Get parameters from the body
-      const {id, name} = req.body as IUpsertGroupRequest;
+      const {id, name} = req.body;
 
       if (id) {
         // Get the groups from database
@@ -54,7 +54,7 @@ class GroupController {
         }
 
         if (groupToUpdate) {
-          console.info('A group has been found: ' + groupToUpdate.id);
+          console.info('A group has been found: %d', groupToUpdate.id);
 
           // Check if the user can edit this group
           if (!Utils.hasGrantAccess<Group>(connectedUser, groupToUpdate)) {
@@ -116,16 +116,15 @@ class GroupController {
   };
 
   public static editGroup = async (
-    req: Request,
+    req: Request<{id: number}, any, IUpdateGroupRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Edit Group endpoint has been called with: ' +
-          req.body.toString() +
-          ' and path param ' +
-          req.params.id,
+        'Edit Group endpoint has been called with: %s and path param %d',
+        req.body.toString(),
+        req.params.id,
       );
 
       // Get the connected user
@@ -141,7 +140,7 @@ class GroupController {
       }
 
       // Get values from the body
-      const {name, owner, users} = req.body as IUpdateGroupRequest;
+      const {name, owner, users} = req.body;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -156,7 +155,7 @@ class GroupController {
         return;
       }
 
-      console.info('A group has been found: ' + groupFound.id);
+      console.info('A group has been found: %d', groupFound.id);
 
       // Check if the user can edit this group
       if (!Utils.hasGrantAccess<Group>(connectedUser, groupFound)) {
@@ -261,15 +260,14 @@ class GroupController {
   };
 
   public static getOneById = async (
-    req: Request,
+    req: Request<{id: number}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Get one Group endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Get one Group endpoint has been called with: path param %d',
+        req.params.id,
       );
 
       // Get the connected user
@@ -310,15 +308,14 @@ class GroupController {
   };
 
   public static deleteGroup = async (
-    req: Request,
+    req: Request<{id: number}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Delete a Group endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Delete a Group endpoint has been called with: path param %d',
+        req.params.id,
       );
 
       // Get the connected user
@@ -361,7 +358,7 @@ class GroupController {
   };
 
   public static multiDelete = async (
-    req: Request,
+    req: Request<any, any, IMultiDeleteRequest[]>,
     res: Response,
     next: NextFunction,
   ) => {
@@ -381,7 +378,7 @@ class GroupController {
       }
 
       // Get values from the body
-      const idsReq = req.body as IMultiDeleteRequest[];
+      const idsReq = req.body;
 
       const ids = idsReq.map(item => item.id);
 

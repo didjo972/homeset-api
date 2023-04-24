@@ -29,7 +29,7 @@ export const GroupRepository = dataSource.getRepository(Group).extend({
       )
       .getOneOrFail();
   },
-  findAll(idUser: string | number): Group[] {
+  findAll(idUser: string | number): Promise<Group[]> {
     return this.createQueryBuilder('group')
       .leftJoinAndSelect('group.owner', 'owner')
       .leftJoinAndSelect('group.users', 'users')

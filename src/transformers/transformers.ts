@@ -126,16 +126,21 @@ export const toActResponse = (act: Act, withDate = false): IActResponse => {
 
 export const toServicingResponse = (
   servicing: Servicing,
+  withDate = false,
 ): IServicingResponse => {
-  return {
+  const servicingResponse: IServicingResponse = {
     id: servicing.id,
     kilometer: servicing.kilometer,
     acts: servicing.acts
       ? servicing.acts.map(item => toActResponse(item))
       : undefined,
-    createdAt: servicing.createdAt,
-    updatedAt: servicing.updatedAt,
+    servicingDate: servicing.servicingDate,
   };
+  if (withDate) {
+    servicingResponse.createdAt = servicing.createdAt;
+    servicingResponse.updatedAt = servicing.updatedAt;
+  }
+  return servicingResponse;
 };
 
 export const toVehicleResponse = (vehicle: Vehicle): IVehicleResponse => {
@@ -145,7 +150,7 @@ export const toVehicleResponse = (vehicle: Vehicle): IVehicleResponse => {
     model: vehicle.model,
     identification: vehicle.identification,
     servicings: vehicle.servicings
-      ? vehicle.servicings.map(toServicingResponse)
+      ? vehicle.servicings.map(item => toServicingResponse(item))
       : undefined,
     createdAt: vehicle.createdAt,
     updatedAt: vehicle.updatedAt,

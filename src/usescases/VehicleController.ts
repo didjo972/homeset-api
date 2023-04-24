@@ -17,10 +17,10 @@ import {Servicing} from '../entity/garage/Servicing';
 import {Act} from '../entity/garage/Act';
 
 class VehicleController {
-  private static matchServicing = (
+  private static matchServicing = async (
     vehicle: Vehicle,
     servicingReq: IServicingRequest,
-  ): Servicing => {
+  ): Promise<Servicing> => {
     if (servicingReq.id) {
       const servicingFound = vehicle.servicings.find(
         item => item.id === servicingReq.id,
@@ -29,26 +29,36 @@ class VehicleController {
         if (servicingReq.kilometer) {
           servicingFound.kilometer = servicingReq.kilometer;
         }
+        if (servicingReq.servicingDate) {
+          servicingFound.servicingDate = servicingReq.servicingDate;
+        }
         if (servicingReq.acts !== undefined) {
-          servicingFound.acts = matchRequestSubItemsInItemEntity<
-            Servicing,
-            IActRequest,
-            Act
-          >(servicingFound, servicingReq.acts, VehicleController.matchAct);
+          servicingFound.acts = await Promise.all(
+            matchRequestSubItemsInItemEntity<Servicing, IActRequest, Act>(
+              servicingFound,
+              servicingReq.acts,
+              VehicleController.matchAct,
+            ),
+          );
         }
         return servicingFound;
       }
     }
 
     if (servicingReq.kilometer) {
-      return new Servicing(servicingReq);
+      const newServicing = new Servicing(servicingReq);
+      const errors = await validate(newServicing);
+      if (errors.length > 0) {
+        throw new Error(errors.toLocaleString());
+      }
+      return newServicing;
     }
   };
 
-  private static matchAct = (
+  private static matchAct = async (
     servicing: Servicing,
     actReq: IActRequest,
-  ): Act => {
+  ): Promise<Act> => {
     if (actReq.id) {
       const actFound = servicing.acts.find(item => item.id === actReq.id);
       if (actFound) {
@@ -63,12 +73,17 @@ class VehicleController {
     }
 
     if (actReq.description) {
-      return new Act(actReq);
+      const newAct = new Act(actReq);
+      const errors = await validate(newAct);
+      if (errors.length > 0) {
+        throw new Error(errors.toLocaleString());
+      }
+      return newAct;
     }
   };
 
   public static upsertVehicule = async (
-    req: Request,
+    req: Request<any, any, IVehicleRequest>,
     res: Response,
     next: NextFunction,
   ) => {
@@ -91,8 +106,7 @@ class VehicleController {
       }
 
       // Get parameters from the body
-      const {id, brand, model, identification, group, servicings} =
-        req.body as IVehicleRequest;
+      const {id, brand, model, identification, group, servicings} = req.body;
 
       if (id) {
         // Get the notes from database
@@ -109,7 +123,7 @@ class VehicleController {
         }
 
         if (vehicleToUpdate) {
-          console.info('A vehicle has been found: ' + vehicleToUpdate.id);
+          console.info('A vehicle has been found: %d', vehicleToUpdate.id);
 
           // Check if the user can edit this vehicle
           if (!Utils.hasGrantAccess<Vehicle>(connectedUser, vehicleToUpdate)) {
@@ -134,11 +148,13 @@ class VehicleController {
           }
 
           if (servicings) {
-            vehicleToUpdate.servicings = matchRequestSubItemsInItemEntity<
-              Vehicle,
-              IServicingRequest,
-              Servicing
-            >(vehicleToUpdate, servicings, VehicleController.matchServicing);
+            vehicleToUpdate.servicings = await Promise.all(
+              matchRequestSubItemsInItemEntity<
+                Vehicle,
+                IServicingRequest,
+                Servicing
+              >(vehicleToUpdate, servicings, VehicleController.matchServicing),
+            );
           }
 
           if (group !== undefined) {
@@ -179,6 +195,16 @@ class VehicleController {
         vehicleToCreate.identification = identification;
       }
 
+      if (servicings) {
+        vehicleToCreate.servicings = await Promise.all(
+          matchRequestSubItemsInItemEntity<
+            Vehicle,
+            IServicingRequest,
+            Servicing
+          >(vehicleToCreate, servicings, VehicleController.matchServicing),
+        );
+      }
+
       if (group !== undefined) {
         try {
           vehicleToCreate.group = await selectGroup(group, connectedUser.id);
@@ -214,16 +240,15 @@ class VehicleController {
   };
 
   public static editVehicle = async (
-    req: Request,
+    req: Request<{id: number}, any, IVehicleRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Edit Vehicle endpoint has been called with: ' +
-          req.body.toString() +
-          ' and path param ' +
-          req.params.id,
+        'Edit Vehicle endpoint has been called with: %s and path param %d',
+        req.body,
+        req.params.id,
       );
 
       // Get the connected user
@@ -239,8 +264,7 @@ class VehicleController {
       }
 
       // Get values from the body
-      const {brand, model, identification, servicings, group} =
-        req.body as IVehicleRequest;
+      const {brand, model, identification, servicings, group} = req.body;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -255,7 +279,7 @@ class VehicleController {
         return;
       }
 
-      console.info('A vehicle has been found: ' + vehicleFound.id);
+      console.info('A vehicle has been found: %d', vehicleFound.id);
 
       // Check if the user can edit this vehicle
       if (!Utils.hasGrantAccess<Vehicle>(connectedUser, vehicleFound)) {
@@ -280,11 +304,13 @@ class VehicleController {
       }
 
       if (servicings) {
-        vehicleFound.servicings = matchRequestSubItemsInItemEntity<
-          Vehicle,
-          IServicingRequest,
-          Servicing
-        >(vehicleFound, servicings, VehicleController.matchServicing);
+        vehicleFound.servicings = await Promise.all(
+          matchRequestSubItemsInItemEntity<
+            Vehicle,
+            IServicingRequest,
+            Servicing
+          >(vehicleFound, servicings, VehicleController.matchServicing),
+        );
       }
 
       if (group !== undefined) {
@@ -346,15 +372,14 @@ class VehicleController {
   };
 
   public static getOneById = async (
-    req: Request,
+    req: Request<{id: number}, any, any>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Get one Vehicle endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Get one Vehicle endpoint has been called with: path param = %d',
+        req.params.id,
       );
 
       // Get the connected user
@@ -398,15 +423,14 @@ class VehicleController {
   };
 
   public static deleteVehicle = async (
-    req: Request,
+    req: Request<{id: number}, any, any>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Delete a Vehicle endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Delete a Vehicle endpoint has been called with: path param = %d',
+        req.params.id,
       );
 
       // Get the connected user

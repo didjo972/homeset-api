@@ -15,7 +15,10 @@ import {In} from 'typeorm';
 import {matchRequestSubItemsInItemEntity, selectGroup} from './Helpers';
 
 class TodoController {
-  private static matchTask = (todo: Todo, taskReq: Task): Task | undefined => {
+  private static matchTask = async (
+    todo: Todo,
+    taskReq: Task,
+  ): Promise<Task> => {
     if (taskReq.id) {
       const taskFound = todo.tasks.find(item => item.id === taskReq.id);
       if (taskFound) {
@@ -30,19 +33,24 @@ class TodoController {
     }
 
     if (taskReq.description) {
-      return new Task(taskReq);
+      const newTask = new Task(taskReq);
+      const errors = await validate(newTask);
+      if (errors.length > 0) {
+        throw new Error(errors.toLocaleString());
+      }
+      return newTask;
     }
   };
 
   public static upsertTodo = async (
-    req: Request,
+    req: Request<any, any, ITodoRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Create or Update Todo endpoint has been called with: ' +
-          req.body.toString(),
+        'Create or Update Todo endpoint has been called with: %s',
+        req.body.toString(),
       );
 
       // Get the connected user
@@ -58,7 +66,7 @@ class TodoController {
       }
 
       // Get parameters from the body
-      const {id, name, group, tasks = []} = req.body as ITodoRequest;
+      const {id, name, group, tasks = []} = req.body;
 
       if (id) {
         // Get the todos from database
@@ -72,7 +80,7 @@ class TodoController {
         }
 
         if (todoToUpdate) {
-          console.info('A todo has been found: ' + todoToUpdate.id);
+          console.info('A todo has been found: %d', todoToUpdate.id);
 
           // Check if the user can edit this todo
           if (!Utils.hasGrantAccess<Todo>(connectedUser, todoToUpdate)) {
@@ -99,11 +107,13 @@ class TodoController {
           }
 
           if (tasks && tasks.length > 0) {
-            todoToUpdate.tasks = matchRequestSubItemsInItemEntity<
-              Todo,
-              ITaskRequest,
-              Task
-            >(todoToUpdate, tasks, TodoController.matchTask);
+            todoToUpdate.tasks = await Promise.all(
+              matchRequestSubItemsInItemEntity<Todo, ITaskRequest, Task>(
+                todoToUpdate,
+                tasks,
+                TodoController.matchTask,
+              ),
+            );
           }
 
           const errors = await validate(todoToUpdate);
@@ -147,16 +157,15 @@ class TodoController {
   };
 
   public static editTodo = async (
-    req: Request,
+    req: Request<{id: number}, any, ITodoRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Edit Todo endpoint has been called with: ' +
-          req.body.toString() +
-          ' and path param ' +
-          req.params.id,
+        'Edit Todo endpoint has been called with: %s and path param %d',
+        req.body.toString(),
+        req.params.id,
       );
 
       // Get the connected user
@@ -172,7 +181,7 @@ class TodoController {
       }
 
       // Get values from the body
-      const {name, tasks, group} = req.body as ITodoRequest;
+      const {name, tasks, group} = req.body;
 
       // Get the ID from the url
       const id = req.params.id;
@@ -187,7 +196,7 @@ class TodoController {
         return;
       }
 
-      console.info('A todo has been found: ' + todoFound.id);
+      console.info('A todo has been found: %d', todoFound.id);
 
       // Check if the user can edit this todo
       if (!Utils.hasGrantAccess<Todo>(connectedUser, todoFound)) {
@@ -212,11 +221,13 @@ class TodoController {
       }
 
       if (tasks && tasks.length >= 0) {
-        todoFound.tasks = matchRequestSubItemsInItemEntity<
-          Todo,
-          ITaskRequest,
-          Task
-        >(todoFound, tasks, TodoController.matchTask);
+        todoFound.tasks = await Promise.all(
+          matchRequestSubItemsInItemEntity<Todo, ITaskRequest, Task>(
+            todoFound,
+            tasks,
+            TodoController.matchTask,
+          ),
+        );
       }
 
       const errors = await validate(todoFound);
@@ -268,15 +279,14 @@ class TodoController {
   };
 
   public static getOneById = async (
-    req: Request,
+    req: Request<{id: number}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Get one Todo endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Get one Todo endpoint has been called with: path param = %d',
+        req.params.id,
       );
 
       // Get the connected user
@@ -292,7 +302,7 @@ class TodoController {
       }
 
       // Get the ID from the url
-      const id: number = +req.params.id;
+      const id = req.params.id;
 
       // Get the todos from database
       let todoFound;
@@ -318,15 +328,14 @@ class TodoController {
   };
 
   public static deleteTodo = async (
-    req: Request,
+    req: Request<{id: number}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Delete a Todo endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Delete a Todo endpoint has been called with: path param = %d',
+        req.params.id,
       );
 
       // Get the connected user
@@ -369,7 +378,7 @@ class TodoController {
   };
 
   public static multiDelete = async (
-    req: Request,
+    req: Request<any, any, IMultiDeleteRequest[]>,
     res: Response,
     next: NextFunction,
   ) => {
@@ -389,7 +398,7 @@ class TodoController {
       }
 
       // Get values from the body
-      const idsReq = req.body as IMultiDeleteRequest[];
+      const idsReq = req.body;
 
       const ids = idsReq.map(item => item.id);
 

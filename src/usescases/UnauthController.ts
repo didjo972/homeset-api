@@ -1,6 +1,5 @@
 import {validate} from 'class-validator';
 import {NextFunction, Request, Response} from 'express';
-import {getRepository} from 'typeorm';
 
 import {User} from '../entity/user/User';
 import {MailError} from '../shared/errors/MailError';
@@ -9,6 +8,7 @@ import {
   IResetPasswordRequest,
 } from '../shared/api-request-interfaces';
 import {mailService} from '../shared/mail';
+import {UserRepository} from '../repositories/UserRepository';
 
 class UnauthController {
   public static helloWorld = (
@@ -32,13 +32,13 @@ class UnauthController {
   };
 
   public static newUser = async (
-    req: Request,
+    req: Request<any, any, ICreateUserRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       // Get parameters from the body
-      const {username, password, email} = req.body as ICreateUserRequest;
+      const {username, password, email} = req.body;
       const user = new User();
       user.username = username;
       user.password = password;
@@ -59,9 +59,8 @@ class UnauthController {
       user.createOrUpdateRefreshSecret();
 
       // Try to save. If fails, the username is already in use
-      const userRepository = getRepository(User);
       try {
-        await userRepository.save(user);
+        await UserRepository.save(user);
       } catch (e) {
         res.status(409).send('username already in use');
         return;
@@ -75,22 +74,20 @@ class UnauthController {
   };
 
   public static resetPassword = async (
-    req: Request,
+    req: Request<any, any, IResetPasswordRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
-      const {email} = req.body as IResetPasswordRequest;
+      const {email} = req.body;
       if (!email) {
         res.status(400).send('Email is missing');
         return;
       }
 
       // Get the user by email
-      const userRepository = getRepository(User);
       try {
-        const userFound = await userRepository
-          .createQueryBuilder('user')
+        const userFound = await UserRepository.createQueryBuilder('user')
           .where('user.email = :email', {email})
           .getOne();
 

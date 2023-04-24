@@ -28,15 +28,14 @@ class UserController {
   };
 
   public static getOneById = async (
-    req: Request,
+    req: Request<{id: number}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Get one User endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Get one User endpoint has been called with: path param = %d',
+        req.params.id,
       );
 
       // Get the ID from the url
@@ -59,19 +58,18 @@ class UserController {
   };
 
   public static findsByUsername = async (
-    req: Request,
+    req: Request<any, any, any, {username: string}>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Finds by username a User endpoint has been called with: ' +
-          'path param ' +
-          req.query,
+        'Finds by username a User endpoint has been called with: path param = %s',
+        req.query,
       );
 
       // Get the username from the url
-      const search = req.query.username as string;
+      const search = req.query.username;
 
       if (!search && search.length < 3) {
         res.status(400).send('The search is incorrect');
@@ -96,22 +94,21 @@ class UserController {
   };
 
   public static editUser = async (
-    req: Request,
+    req: Request<{id: number}, any, IEditUserRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Edit a User endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Edit a User endpoint has been called with: path param = %d',
+        req.params.id,
       );
 
       // Get the ID from the url
       const id = req.params.id;
 
       // Get values from the body
-      const {username, role, phone} = req.body as IEditUserRequest;
+      const {username, role, phone} = req.body;
 
       // Try to find user on database
       let user;
@@ -157,15 +154,14 @@ class UserController {
   };
 
   public static deleteUser = async (
-    req: Request,
+    req: Request<{id: number}, any, any>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       console.info(
-        'Delete a User endpoint has been called with: ' +
-          'path param ' +
-          req.params.id,
+        'Delete a User endpoint has been called with: path param = %d',
+        req.params.id,
       );
 
       // Get the ID from the url
@@ -173,7 +169,7 @@ class UserController {
 
       let user: User;
       try {
-        user = await UserRepository.findOneOrFail({where: {id: +id}});
+        user = await UserRepository.findOneOrFail({where: {id}});
       } catch (error) {
         res.status(404).send('User not found');
         return;

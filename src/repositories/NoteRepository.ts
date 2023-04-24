@@ -4,7 +4,10 @@ import {Note} from '../entity/notes/Note';
 import {dataSource} from '../../ormconfig';
 
 export const NoteRepository = dataSource.getRepository(Note).extend({
-  getOneById(id: UniqueIdentifierType, idUser: UniqueIdentifierType): Note {
+  getOneById(
+    id: UniqueIdentifierType,
+    idUser: UniqueIdentifierType,
+  ): Promise<Note> {
     return this.createQueryBuilder('note')
       .leftJoinAndSelect('note.owner', 'owner')
       .leftJoinAndSelect('note.group', 'group')
@@ -30,7 +33,7 @@ export const NoteRepository = dataSource.getRepository(Note).extend({
       )
       .getOneOrFail();
   },
-  findAll(idUser: UniqueIdentifierType): Note[] {
+  findAll(idUser: UniqueIdentifierType): Promise<Note[]> {
     return this.createQueryBuilder('note')
       .leftJoinAndSelect('note.owner', 'owner')
       .leftJoinAndSelect('note.group', 'group')

@@ -58,27 +58,21 @@ export const app = express();
 
 /**
  *
- * @param err
- * @param req
- * @param res
- * @param next
+ * @param {Error} err error
+ * @param {Request} req request
+ * @param {Response} res response
  */
-function errorHandler(
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+const errorHandler = (err: Error, req: Request, res: Response) => {
   console.error(err);
   res.status(500).send('Service unavailable !');
-}
+};
 
 /**
  *
- * @param err
- * @param req
- * @param res
- * @param next
+ * @param {Error} err
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
  */
 // function requestLogger(
 //   err: Error,

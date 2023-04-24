@@ -13,13 +13,13 @@ import {dataSource} from '../../ormconfig';
 
 class AuthController {
   public static login = async (
-    req: Request,
+    req: Request<any, any, ILoginRequest>,
     res: Response,
     next: NextFunction,
   ) => {
     try {
       // Check if username and password are set
-      const {email, password}: ILoginRequest = req.body;
+      const {email, password} = req.body;
       if (!email || email === '' || !password || password === '') {
         res.status(400).send();
         return;
@@ -60,7 +60,7 @@ class AuthController {
   };
 
   public static changePassword = async (
-    req: Request,
+    req: Request<any, any, IChangePasswordRequest>,
     res: Response,
     next: NextFunction,
   ) => {
@@ -70,7 +70,7 @@ class AuthController {
       const id = jwtPayload.userId;
 
       // Get parameters from the body
-      const {oldPassword, newPassword}: IChangePasswordRequest = req.body;
+      const {oldPassword, newPassword} = req.body;
       if (!(oldPassword && newPassword)) {
         res.status(400).send();
       }

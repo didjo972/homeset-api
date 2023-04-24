@@ -1,5 +1,4 @@
 import {Response} from 'express';
-import {getRepository} from 'typeorm';
 import {User} from '../entity/user/User';
 import {IJwtPayload} from '../shared/interfaces';
 import AbstractBusiness from '../entity/abstract/AbstractBusiness';
@@ -21,10 +20,10 @@ class Utils {
   /**
    * Check if a user a grant access on the Todo, Item and Vehicule entities
    *
-   * @param connectedUser the user
-   * @param businessEntity the entity
-   * @param deleteAction
-   * @returns a boolean
+   * @param {User} connectedUser the user
+   * @param {AbstractBusiness} businessEntity the entity
+   * @param {boolean} deleteAction is the action should delete
+   * @returns {boolean} a boolean
    */
   public static hasGrantAccess = <T extends AbstractBusiness>(
     connectedUser: User,

@@ -5,6 +5,7 @@
     "target": "es2017",
     "strict": false,
     "noImplicitAny": true,
+    "noImplicitThis": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -13,9 +14,7 @@
     "typeRoots": ["node_modules/@types"],
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "node_modules/*"
-      ]
+      "*": ["node_modules/*"]
     },
     "resolveJsonModule": true
   }

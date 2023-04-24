@@ -1,11 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import {Column, Entity, ManyToOne} from 'typeorm';
 import {Servicing} from './Servicing';
 import AbstractEntity from '../abstract/AbstractEntity';
 import {IActRequest} from '../../shared/api-request-interfaces';

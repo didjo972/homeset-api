@@ -1,8 +1,8 @@
 import {Column, Entity, ManyToOne} from 'typeorm';
-import {ICreateTaskRequest} from '../../shared/api-request-interfaces';
 import {Todo} from './Todo';
 import AbstractEntity from '../abstract/AbstractEntity';
 import {User} from '../user/User';
+import {ITaskRequest} from '../../shared/api-request-interfaces';
 
 /**
  * @swagger
@@ -51,7 +51,7 @@ export class Task extends AbstractEntity {
   @ManyToOne(() => User, owner => owner.todos, {eager: true})
   public owner: User;
 
-  constructor(taskRequest?: ICreateTaskRequest) {
+  constructor(taskRequest?: ITaskRequest) {
     if (taskRequest) {
       super(taskRequest.id);
       this.description = taskRequest.description;

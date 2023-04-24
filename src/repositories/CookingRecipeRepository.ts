@@ -9,7 +9,7 @@ export const CookingRecipeRepository = dataSource
     getOneById(
       id: UniqueIdentifierType,
       idUser: UniqueIdentifierType,
-    ): CookingRecipe {
+    ): Promise<CookingRecipe> {
       return this.createQueryBuilder('cookingRecipe')
         .leftJoinAndSelect('cookingRecipe.owner', 'owner')
         .leftJoinAndSelect('cookingRecipe.groups', 'group')
@@ -38,7 +38,7 @@ export const CookingRecipeRepository = dataSource
         )
         .getOneOrFail();
     },
-    findAll(idUser: UniqueIdentifierType): CookingRecipe[] {
+    findAll(idUser: UniqueIdentifierType): Promise<CookingRecipe[]> {
       return this.createQueryBuilder('cookingRecipe')
         .leftJoinAndSelect('cookingRecipe.owner', 'owner')
         .leftJoinAndSelect('cookingRecipe.groups', 'group')

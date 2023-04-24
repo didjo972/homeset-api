@@ -1,12 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
 import {Act} from './Act';
 import {Vehicle} from './Vehicle';
 import AbstractEntity from '../abstract/AbstractEntity';
@@ -51,6 +43,9 @@ export class Servicing extends AbstractEntity {
   @Column()
   public kilometer: number;
 
+  @Column({type: 'timestamptz'})
+  public servicingDate: Date;
+
   @ManyToOne(() => Vehicle, vehicle => vehicle.servicings)
   public vehicle: Vehicle;
 
@@ -63,6 +58,9 @@ export class Servicing extends AbstractEntity {
     if (servicingRequest) {
       super(servicingRequest.id);
       this.kilometer = servicingRequest.kilometer;
+      this.servicingDate = servicingRequest.servicingDate
+        ? servicingRequest.servicingDate
+        : new Date();
       this.acts = servicingRequest.acts.map(item => new Act(item));
     } else {
       super();
